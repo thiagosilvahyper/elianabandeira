@@ -1,13 +1,14 @@
 // ============================================================
-// SERVER.JS — VERSÃO COMPLETA PARA VERCEL
+// SERVER.JS — VERSÃO COMPLETA E CORRIGIDA PARA VERCEL
 // CORREÇÕES:
-// 1. Ordem das rotas corrigida (específicas antes de genéricas)
-// 2. Rota /api/stats movida para antes da rota genérica
-// 3. PORT usa variável de ambiente (process.env.PORT)
-// 4. Suporte para Vercel (exporta module.exports = app)
-// 5. Melhor tratamento de erros
-// 6. Validação de dados aprimorada
-// 7. Persistência de dados adaptada para Vercel (read-only filesystem)
+// 1. Substituído __dirname por process.cwd() para Vercel
+// 2. Ordem das rotas corrigida (específicas antes de genéricas)
+// 3. Rota /api/stats movida para antes da rota genérica
+// 4. PORT usa variável de ambiente (process.env.PORT)
+// 5. Suporte para Vercel (exporta module.exports = app)
+// 6. Melhor tratamento de erros
+// 7. Validação de dados aprimorada
+// 8. Persistência de dados adaptada para Vercel (read-only filesystem)
 // ============================================================
 
 const express = require('express');
@@ -25,13 +26,14 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Servir ficheiros estáticos da pasta atual (raiz)
-app.use(express.static(__dirname));
+// CORREÇÃO VERCEL: Servir ficheiros estáticos usando process.cwd() (raiz do projeto)
+app.use(express.static(process.cwd()));
 
 // ============================================================
 // BASE DE DADOS (JSON)
 // ============================================================
-const DATA_FILE = path.join(__dirname, 'data.json');
+// CORREÇÃO VERCEL: Busca o data.json na raiz do projeto corretamente
+const DATA_FILE = path.join(process.cwd(), 'data.json');
 const API_KEY = process.env.API_KEY || 'imperare2024';
 
 // Dados iniciais COMPLETOS com todas as coleções
@@ -235,7 +237,7 @@ function verifyApiKey(req) {
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'online', 
-        version: '5.1-vercel', 
+        version: '5.2-vercel', 
         uptime: Math.floor(process.uptime()),
         vercel: isVercel,
         timestamp: new Date().toISOString() 
@@ -547,11 +549,11 @@ app.delete('/api/:collection/:id', (req, res) => {
 });
 
 // ============================================================
-// ROTAS PARA O ADMIN E SITE
+// ROTAS PARA O ADMIN E SITE (CORRIGIDAS COM process.cwd())
 // ============================================================
 
 app.get('/', (req, res) => {
-    const filePath = path.join(__dirname, 'index.html');
+    const filePath = path.join(process.cwd(), 'index.html');
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
     } else {
@@ -560,7 +562,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
-    const filePath = path.join(__dirname, 'admin.html');
+    const filePath = path.join(process.cwd(), 'admin.html');
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
     } else {
@@ -569,7 +571,7 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/admin.html', (req, res) => {
-    const filePath = path.join(__dirname, 'admin.html');
+    const filePath = path.join(process.cwd(), 'admin.html');
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
     } else {
@@ -578,7 +580,7 @@ app.get('/admin.html', (req, res) => {
 });
 
 app.get('/index.html', (req, res) => {
-    const filePath = path.join(__dirname, 'index.html');
+    const filePath = path.join(process.cwd(), 'index.html');
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
     } else {
@@ -626,7 +628,7 @@ if (require.main === module) {
         console.log(`║  🎨  Cores:     Paleta carregada                       ║`);
         console.log('╠═══════════════════════════════════════════════════════╣');
         console.log(`║  🔑  API Key:   ${API_KEY}        ║`);
-        console.log(`║  📦  Versão:    5.1-vercel                            ║`);
+        console.log(`║  📦  Versão:    5.2-vercel                            ║`);
         console.log(`║  🌐  Ambiente:  ${isVercel ? 'Vercel' : 'Local'}                                   ║`);
         console.log('╚═══════════════════════════════════════════════════════╝\n');
         console.log('✅ Servidor pronto!');
