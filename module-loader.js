@@ -17,7 +17,7 @@
         hero: {
             id: 'hero',
             container: 'module-hero',
-            script: 'modules/module-hero.js',
+            script: 'module-hero.js',
             css: `
                 .hero-section { position:relative; min-height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:80px 0 60px; }
                 .hero-banner { position:absolute; inset:0; z-index:0; overflow:hidden; }
@@ -128,7 +128,7 @@
         trajectory: {
             id: 'trajectory',
             container: 'module-trajectory',
-            script: 'modules/module-trajectory.js',
+            script: 'module-trajectory.js',
             css: `
                 .timeline-container { position:relative; padding-left:40px; }
                 .timeline-line { position:absolute; left:14px; top:0; bottom:0; width:2px; background:var(--gray-border); }
@@ -150,7 +150,7 @@
         performance: {
             id: 'performance',
             container: 'module-performance',
-            script: 'modules/module-performance.js',
+            script: 'module-performance.js',
             css: `
                 .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
                 .stat-card { background:var(--white); padding:1.5rem; border-radius:var(--radius-lg); border:1px solid var(--gray-border); text-align:center; transition:all var(--transition-medium); }
@@ -176,7 +176,7 @@
         about: {
             id: 'about',
             container: 'module-about',
-            script: 'modules/module-about.js',
+            script: 'module-about.js',
             css: `
                 .about-wrapper { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:center; }
                 .about-image { border-radius:var(--radius-lg); overflow:hidden; background:var(--gray-light); }
@@ -224,7 +224,7 @@
         gallery: {
             id: 'gallery',
             container: 'module-gallery',
-            script: 'modules/module-gallery.js',
+            script: 'module-gallery.js',
             css: `
                 .gallery-filters { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; justify-content:center; }
                 .filter-btn { padding:0.4rem 1.2rem; background:transparent; border:1px solid var(--gray-border); border-radius:var(--radius-full); font-size:0.8rem; font-weight:500; color:var(--gray-text); cursor:pointer; transition:all var(--transition-fast); font-family:var(--font-primary); }
@@ -244,7 +244,7 @@
         videos: {
             id: 'videos',
             container: 'module-videos',
-            script: 'modules/module-videos.js',
+            script: 'module-videos.js',
             css: `
                 .videos-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; }
                 .video-card { background:var(--white); border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--gray-border); cursor:pointer; transition:all var(--transition-medium); }
@@ -262,7 +262,7 @@
         sponsors: {
             id: 'sponsors',
             container: 'module-sponsors',
-            script: 'modules/module-sponsors.js',
+            script: 'module-sponsors.js',
             css: `
                 .sponsors-grid { display:flex; flex-wrap:wrap; gap:2.5rem 4rem; align-items:center; justify-content:center; padding:2rem 2.5rem; background:var(--white); border-radius:var(--radius-xl); border:1px solid var(--gray-border); }
                 .sponsors-grid img { max-height:70px; width:auto; max-width:160px; object-fit:contain; transition:all var(--transition-medium); }
@@ -283,7 +283,7 @@
         contact: {
             id: 'contact',
             container: 'module-contact',
-            script: 'modules/module-contact.js',
+            script: 'module-contact.js',
             css: `
                 .contact-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; margin-bottom:2.5rem; }
                 .contact-card { text-align:center; padding:2.5rem 1.5rem; background:var(--gray-light); border-radius:var(--radius-lg); border:1px solid var(--gray-border); transition:all var(--transition-medium); }
