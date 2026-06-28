@@ -5,6 +5,15 @@
 window.module_gallery = function(container, lang, t) {
     console.log('🖼️ Gallery module iniciado');
 
+    // ✅ Função auxiliar para obter tradução com fallback
+    function getText(key, fallback) {
+        var result = t(key);
+        if (result === key || result === undefined || result === null) {
+            return fallback;
+        }
+        return result;
+    }
+
     var defaultPhotos = [
         { id: 1, title: 'Treino explosivo', category: 'treinos', url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=500&fit=crop' },
         { id: 2, title: 'Competição internacional', category: 'competicoes', url: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&h=400&fit=crop' },
@@ -34,22 +43,32 @@ window.module_gallery = function(container, lang, t) {
     function renderGallery(data, filter) {
         var filtered = filter === 'all' ? data : data.filter(function(item) { return item.category === filter; });
 
+        // ✅ Usar getText com fallbacks
+        var tag = getText('gallery.tag', 'Galeria');
+        var title = getText('gallery.title', 'Momentos');
+        var highlight = getText('gallery.highlight', 'que marcaram');
+        var all = getText('gallery.all', 'Todos');
+        var training = getText('gallery.training', 'Treinos');
+        var competitions = getText('gallery.competitions', 'Competições');
+        var behind = getText('gallery.behind', 'Bastidores');
+        var events = getText('gallery.events', 'Eventos');
+
         container.innerHTML = `
             <section id="gallery" class="section-gallery">
                 <div class="container">
                     <div class="section-header centered">
-                        <span class="section-tag">${t('gallery.tag') || 'Galeria'}</span>
+                        <span class="section-tag">${tag}</span>
                         <h2 class="section-title">
-                            ${t('gallery.title') || 'Momentos'} <span class="highlight">${t('gallery.highlight') || 'que marcaram'}</span>
+                            ${title} <span class="highlight">${highlight}</span>
                         </h2>
                     </div>
 
                     <div class="gallery-filters">
-                        <button class="filter-btn active" data-filter="all">${t('gallery.all') || 'Todos'}</button>
-                        <button class="filter-btn" data-filter="treinos">${t('gallery.training') || 'Treinos'}</button>
-                        <button class="filter-btn" data-filter="competicoes">${t('gallery.competitions') || 'Competições'}</button>
-                        <button class="filter-btn" data-filter="bastidores">${t('gallery.behind') || 'Bastidores'}</button>
-                        <button class="filter-btn" data-filter="eventos">${t('gallery.events') || 'Eventos'}</button>
+                        <button class="filter-btn active" data-filter="all">${all}</button>
+                        <button class="filter-btn" data-filter="treinos">${training}</button>
+                        <button class="filter-btn" data-filter="competicoes">${competitions}</button>
+                        <button class="filter-btn" data-filter="bastidores">${behind}</button>
+                        <button class="filter-btn" data-filter="eventos">${events}</button>
                     </div>
 
                     <div class="gallery-grid" id="galleryGrid">
@@ -66,7 +85,6 @@ window.module_gallery = function(container, lang, t) {
             </section>
         `;
 
-        // Filtros
         var filterBtns = container.querySelectorAll('.filter-btn');
         filterBtns.forEach(function(btn) {
             btn.addEventListener('click', function() {

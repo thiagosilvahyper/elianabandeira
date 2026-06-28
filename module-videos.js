@@ -5,6 +5,15 @@
 window.module_videos = function(container, lang, t) {
     console.log('🎬 Videos module iniciado');
 
+    // ✅ Função auxiliar para obter tradução com fallback
+    function getText(key, fallback) {
+        var result = t(key);
+        if (result === key || result === undefined || result === null) {
+            return fallback;
+        }
+        return result;
+    }
+
     var defaultVideos = [
         { id: 1, title: 'Lançamento 19.08m - Recorde Nacional', embed: 'Tv7P9H3QpKk', views: '12.5K' },
         { id: 2, title: 'Entrevista exclusiva - Eliana Bandeira', embed: '1Lk6P_v4eCg', views: '8.2K' },
@@ -29,18 +38,11 @@ window.module_videos = function(container, lang, t) {
             });
     }
 
-    /**
-     * Extrai o ID do vídeo do YouTube de uma URL ou retorna o ID diretamente
-     */
     function extractYoutubeId(input) {
         if (!input) return null;
-        
-        // Se já for um ID curto (11 caracteres)
         if (/^[a-zA-Z0-9_-]{11}$/.test(input.trim())) {
             return input.trim();
         }
-        
-        // Tenta extrair de URLs
         var patterns = [
             /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
             /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
@@ -48,35 +50,35 @@ window.module_videos = function(container, lang, t) {
             /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
             /(?:youtube\.com\/v\/)([a-zA-Z0-9_-]{11})/
         ];
-        
         for (var i = 0; i < patterns.length; i++) {
             var match = input.match(patterns[i]);
             if (match && match[1]) {
                 return match[1];
             }
         }
-        
-        // Se não encontrou, retorna o input original (pode ser um ID válido)
         return input.trim();
     }
 
     function renderVideos(data) {
+        // ✅ Usar getText com fallbacks
+        var tag = getText('videos.tag', 'Multimídia');
+        var title = getText('videos.title', 'Vídeos');
+        var highlight = getText('videos.highlight', 'em destaque');
+
         container.innerHTML = `
             <section id="videos" class="section-videos">
                 <div class="container">
                     <div class="section-header centered">
-                        <span class="section-tag">${t('videos.tag') || 'Multimídia'}</span>
+                        <span class="section-tag">${tag}</span>
                         <h2 class="section-title">
-                            ${t('videos.title') || 'Vídeos'} <span class="highlight">${t('videos.highlight') || 'em destaque'}</span>
+                            ${title} <span class="highlight">${highlight}</span>
                         </h2>
                     </div>
 
                     <div class="videos-grid">
                         ${data.map(function(video, index) {
-                            // Extrai o ID do vídeo corretamente
                             var embedId = extractYoutubeId(video.embed);
                             if (!embedId) {
-                                console.warn('⚠️ ID do YouTube inválido:', video.embed);
                                 return `
                                     <div class="video-card" data-embed="" data-index="${index}">
                                         <div class="video-thumb" style="background:#333;display:flex;align-items:center;justify-content:center;min-height:180px;color:#666;">
@@ -89,7 +91,6 @@ window.module_videos = function(container, lang, t) {
                                     </div>
                                 `;
                             }
-                            
                             var thumbnail = `https://img.youtube.com/vi/${embedId}/hqdefault.jpg`;
                             return `
                                 <div class="video-card" data-embed="${embedId}" data-index="${index}">
@@ -101,7 +102,6 @@ window.module_videos = function(container, lang, t) {
                                         <div class="video-play">
                                             <i class="fas fa-play"></i>
                                         </div>
-                                        <div class="video-duration">${video.duration || '02:30'}</div>
                                     </div>
                                     <div class="video-info">
                                         <h4>${video.title}</h4>
@@ -131,38 +131,31 @@ window.module_videos = function(container, lang, t) {
             card.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                
                 var embedId = this.dataset.embed;
                 if (!embedId) {
                     console.warn('⚠️ Embed ID não encontrado');
                     return;
                 }
-
-                // Abre o vídeo no modal
                 var youtubeUrl = 'https://www.youtube.com/embed/' + embedId + '?autoplay=1&rel=0';
                 videoIframe.src = youtubeUrl;
                 videoModal.classList.add('open');
                 document.body.style.overflow = 'hidden';
-                
                 console.log('🎬 Abrindo vídeo:', embedId);
             });
         });
 
-        // Fechar modal - clique no X
         if (videoModalClose) {
             videoModalClose.addEventListener('click', function() {
                 closeVideoModal(videoModal, videoIframe);
             });
         }
 
-        // Fechar modal - clique fora
         videoModal.addEventListener('click', function(e) {
             if (e.target === videoModal) {
                 closeVideoModal(videoModal, videoIframe);
             }
         });
 
-        // Fechar modal - tecla ESC
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && videoModal.classList.contains('open')) {
                 closeVideoModal(videoModal, videoIframe);
@@ -176,7 +169,6 @@ window.module_videos = function(container, lang, t) {
         document.body.style.overflow = '';
     }
 
-    // Carrega os dados e renderiza
     loadData();
 
     return {

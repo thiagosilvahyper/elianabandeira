@@ -5,6 +5,15 @@
 window.module_performance = function(container, lang, t) {
     console.log('📊 Performance module iniciado');
 
+    // ✅ Função auxiliar para obter tradução com fallback
+    function getText(key, fallback) {
+        var result = t(key);
+        if (result === key || result === undefined || result === null) {
+            return fallback;
+        }
+        return result;
+    }
+
     var defaultStats = [
         { id: 1, value: '18.95m', label: 'Recorde Nacional', sub: 'Lançamento do Peso' },
         { id: 2, value: '6', label: 'Medalhas Internacionais', sub: 'Ouro · Prata · Bronze' },
@@ -18,7 +27,6 @@ window.module_performance = function(container, lang, t) {
     var waImage = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=400&fit=crop&crop=center';
 
     function loadData() {
-        // Carregar perfil para a imagem
         fetch('/api/profile')
             .then(function(r) { return r.ok ? r.json() : null; })
             .then(function(profile) {
@@ -37,13 +45,25 @@ window.module_performance = function(container, lang, t) {
     }
 
     function renderPerformance(data) {
+        // ✅ Usar getText com fallbacks
+        var tag = getText('stats.tag', 'Performance');
+        var title = getText('stats.title', 'Números que');
+        var highlight = getText('stats.highlight', 'definem');
+        var title2 = getText('stats.title2', 'a carreira');
+        var waTitle = getText('wa.title', 'World Athletics');
+        var waDesc = getText('wa.desc', 'Perfil oficial da atleta com todos os resultados, recordes e ranking mundial.');
+        var waPb = getText('wa.pb', 'Melhor Marca');
+        var waRanking = getText('wa.ranking', 'Ranking Mundial');
+        var waLastComp = getText('wa.last_comp', 'Última Competição');
+        var waBtn = getText('wa.btn', 'Ver Perfil Oficial');
+
         container.innerHTML = `
             <section id="performance" class="section-performance">
                 <div class="container">
                     <div class="section-header centered">
-                        <span class="section-tag">${t('stats.tag') || 'Performance'}</span>
+                        <span class="section-tag">${tag}</span>
                         <h2 class="section-title">
-                            ${t('stats.title') || 'Números que'} <span class="highlight">${t('stats.highlight') || 'definem'}</span> ${t('stats.title2') || 'a carreira'}
+                            ${title} <span class="highlight">${highlight}</span> ${title2}
                         </h2>
                     </div>
 
@@ -64,24 +84,24 @@ window.module_performance = function(container, lang, t) {
                             <div class="wa-icon">
                                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 80'%3E%3Ctext y='55' font-size='40' font-weight='bold' fill='%23D4AF37'%3EWorld Athletics%3C/text%3E%3C/svg%3E" alt="World Athletics" />
                             </div>
-                            <h3>${t('wa.title') || 'World Athletics'}</h3>
-                            <p>${t('wa.desc') || 'Perfil oficial da atleta com todos os resultados, recordes e ranking mundial.'}</p>
+                            <h3>${waTitle}</h3>
+                            <p>${waDesc}</p>
                             <div class="wa-stats">
                                 <div class="wa-stat">
                                     <span class="wa-stat-value" id="waPb">18.95m</span>
-                                    <span class="wa-stat-label">${t('wa.pb') || 'Personal Best'}</span>
+                                    <span class="wa-stat-label">${waPb}</span>
                                 </div>
                                 <div class="wa-stat">
                                     <span class="wa-stat-value" id="waRanking">#15</span>
-                                    <span class="wa-stat-label">${t('wa.ranking') || 'Ranking Mundial'}</span>
+                                    <span class="wa-stat-label">${waRanking}</span>
                                 </div>
                                 <div class="wa-stat">
                                     <span class="wa-stat-value" id="waLastComp">2024</span>
-                                    <span class="wa-stat-label">${t('wa.last_comp') || 'Última Competição'}</span>
+                                    <span class="wa-stat-label">${waLastComp}</span>
                                 </div>
                             </div>
                             <a href="https://worldathletics.org/athletes/portugal/eliana-bandeira-14653395" target="_blank" rel="noopener" class="btn-primary">
-                                ${t('wa.btn') || 'Ver Perfil Oficial'} <i class="fas fa-external-link-alt"></i>
+                                ${waBtn} <i class="fas fa-external-link-alt"></i>
                             </a>
                         </div>
                         <div class="wa-image">

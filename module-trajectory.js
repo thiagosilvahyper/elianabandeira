@@ -17,6 +17,16 @@ window.module_trajectory = function(container, lang, t) {
     var items = defaultItems;
     var observer = null;
 
+    // ✅ Função auxiliar para obter tradução com fallback
+    function getText(key, fallback) {
+        var result = t(key);
+        // Se o resultado for igual à chave ou undefined, usa o fallback
+        if (result === key || result === undefined || result === null) {
+            return fallback;
+        }
+        return result;
+    }
+
     function loadData() {
         fetch('/api/timeline')
             .then(function(r) { return r.ok ? r.json() : null; })
@@ -32,15 +42,21 @@ window.module_trajectory = function(container, lang, t) {
     }
 
     function renderTrajectory(data) {
+        // ✅ Usar getText com fallbacks em português
+        var tag = getText('trajectory.tag', 'Trajetória');
+        var title = getText('trajectory.title', 'Uma história de');
+        var highlight = getText('trajectory.highlight', 'superação');
+        var desc = getText('trajectory.desc', 'Do Ceará ao mundo — cada passo da jornada que levou Eliana Bandeira ao topo do atletismo mundial.');
+
         container.innerHTML = `
             <section id="trajectory" class="section-trajetoria">
                 <div class="container">
                     <div class="section-header">
-                        <span class="section-tag">${t('trajectory.tag') || 'Trajetória'}</span>
+                        <span class="section-tag">${tag}</span>
                         <h2 class="section-title">
-                            ${t('trajectory.title') || 'Uma história de'} <span class="highlight">${t('trajectory.highlight') || 'superação'}</span>
+                            ${title} <span class="highlight">${highlight}</span>
                         </h2>
-                        <p class="section-desc">${t('trajectory.desc') || 'Do Ceará ao mundo — cada passo da jornada que levou Eliana Bandeira ao topo do atletismo mundial.'}</p>
+                        <p class="section-desc">${desc}</p>
                     </div>
 
                     <div class="timeline-container">

@@ -5,6 +5,15 @@
 window.module_about = function(container, lang, t) {
     console.log('👤 About module iniciado');
 
+    // ✅ Função auxiliar para obter tradução com fallback
+    function getText(key, fallback) {
+        var result = t(key);
+        if (result === key || result === undefined || result === null) {
+            return fallback;
+        }
+        return result;
+    }
+
     var defaultTitles = [
         { id: 1, type: 'gold', competition: 'Jogos Ibero-Americanos', year: '2024', result: '🥇 Ouro' },
         { id: 2, type: 'silver', competition: 'Mundiais Universitários', year: '2023', result: '🥈 Prata' },
@@ -28,14 +37,12 @@ window.module_about = function(container, lang, t) {
     var aboutImage = 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&h=700&fit=crop&crop=center';
 
     function loadData() {
-        // Carregar perfil para a imagem
         fetch('/api/profile')
             .then(function(r) { return r.ok ? r.json() : null; })
             .then(function(profile) {
                 if (profile && profile.aboutImage) {
                     aboutImage = profile.aboutImage;
                 }
-                // Carregar títulos e calendário
                 return Promise.all([
                     fetch('/api/titles').then(function(r) { return r.ok ? r.json() : null; }),
                     fetch('/api/calendar').then(function(r) { return r.ok ? r.json() : null; })
@@ -52,6 +59,19 @@ window.module_about = function(container, lang, t) {
     }
 
     function renderAbout(titlesData, calendarData) {
+        // ✅ Usar getText com fallbacks
+        var tag = getText('about.tag', 'A pessoa');
+        var title = getText('about.title', 'Quem é');
+        var highlight = getText('about.highlight', 'Eliana');
+        var p1 = getText('about.p1', 'Eliana Bandeira é uma atleta olímpica do arremesso de peso que transformou uma infância simples do interior do Ceará numa trajetória de excelência esportiva e impacto humano.');
+        var p2 = getText('about.p2', 'Nascida em Jaguaribara, Ceará, a 1 de julho de 1996, cresceu numa casa simples, cercada por rotina humilde, mas com sonhos grandes demais para o tamanho da cidade.');
+        var p3 = getText('about.p3', 'Aos 18 anos, tomou a decisão corajosa de atravessar o Atlântico para Portugal, onde se especializou no Lançamento do Peso, obteve a nacionalidade portuguesa e realizou o sonho olímpico.');
+        var value1 = getText('about.value1', 'Fé');
+        var value2 = getText('about.value2', 'Disciplina');
+        var value3 = getText('about.value3', 'Resiliência');
+        var value4 = getText('about.value4', 'Portugal');
+        var value5 = getText('about.value5', 'Brasil');
+
         container.innerHTML = `
             <section id="about" class="section-about">
                 <div class="container">
@@ -60,19 +80,19 @@ window.module_about = function(container, lang, t) {
                             <img id="aboutMainImage" src="${aboutImage}" alt="Eliana Bandeira" loading="lazy" />
                         </div>
                         <div class="about-content">
-                            <span class="section-tag">${t('about.tag') || 'A pessoa'}</span>
+                            <span class="section-tag">${tag}</span>
                             <h2 class="section-title">
-                                ${t('about.title') || 'Quem é'} <span class="highlight">${t('about.highlight') || 'Eliana'}</span>
+                                ${title} <span class="highlight">${highlight}</span>
                             </h2>
-                            <p>${t('about.p1') || 'Eliana Bandeira é uma atleta olímpica do arremesso de peso que transformou uma infância simples do interior do Ceará numa trajetória de excelência esportiva e impacto humano.'}</p>
-                            <p>${t('about.p2') || 'Nascida em Jaguaribara, Ceará, a 1 de julho de 1996, cresceu numa casa simples, cercada por rotina humilde, mas com sonhos grandes demais para o tamanho da cidade.'}</p>
-                            <p>${t('about.p3') || 'Aos 18 anos, tomou a decisão corajosa de atravessar o Atlântico para Portugal, onde se especializou no Lançamento do Peso, obteve a nacionalidade portuguesa e realizou o sonho olímpico.'}</p>
+                            <p>${p1}</p>
+                            <p>${p2}</p>
+                            <p>${p3}</p>
                             <div class="about-values">
-                                <span><i class="fas fa-heart"></i> ${t('about.value1') || 'Fé'}</span>
-                                <span><i class="fas fa-star"></i> ${t('about.value2') || 'Disciplina'}</span>
-                                <span><i class="fas fa-hand-holding-heart"></i> ${t('about.value3') || 'Resiliência'}</span>
-                                <span><i class="fas fa-flag"></i> ${t('about.value4') || 'Portugal'}</span>
-                                <span><i class="fas fa-globe-americas"></i> ${t('about.value5') || 'Brasil'}</span>
+                                <span><i class="fas fa-heart"></i> ${value1}</span>
+                                <span><i class="fas fa-star"></i> ${value2}</span>
+                                <span><i class="fas fa-hand-holding-heart"></i> ${value3}</span>
+                                <span><i class="fas fa-flag"></i> ${value4}</span>
+                                <span><i class="fas fa-globe-americas"></i> ${value5}</span>
                             </div>
                         </div>
                     </div>
