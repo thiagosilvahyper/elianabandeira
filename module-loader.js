@@ -2,7 +2,7 @@
  * MODULE LOADER - Eliana Bandeira
  * Carrega todos os módulos do site dinamicamente
  * Compatível com server.js (sem ES6 modules)
- * Versão: 3.0 - Traduções externas
+ * Versão: 3.1 - Suporte a re-renderização de módulos
  */
 
 (function() {
@@ -41,7 +41,6 @@
                 .hero-scroll-indicator { display:flex; align-items:center; gap:0.8rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; opacity:0.6; }
                 .scroll-line { width:40px; height:2px; background:rgba(255,255,255,0.2); border-radius:1px; overflow:hidden; }
                 .scroll-progress { width:0%; height:100%; background:var(--gold-olympic); transition:width 0.1s linear; }
-                /* BOTÃO WORLD ATHLETICS COM LOGO */
                 .world-athletics-badge {
                     position: fixed;
                     bottom: 30px;
@@ -319,23 +318,20 @@
     };
 
     // ============================================================
-    // 2. SISTEMA DE TRADUÇÃO (carrega de arquivos externos)
+    // 2. SISTEMA DE TRADUÇÃO
     // ============================================================
     let translations = {};
     let currentLang = 'pt';
     let translationsLoaded = false;
     let translationPromises = {};
+    let moduleInstances = {};
 
     async function loadTranslationFile(lang) {
-        // Se já carregou, retorna do cache
         if (translations[lang]) return translations[lang];
-        
-        // Se já está carregando, aguarda
         if (translationPromises[lang]) {
             return translationPromises[lang];
         }
 
-        // Inicia o carregamento
         translationPromises[lang] = (async function() {
             try {
                 const response = await fetch(`/${lang}.json`);
@@ -346,7 +342,6 @@
                 return data;
             } catch (error) {
                 console.error(`❌ Erro ao carregar traduções para ${lang}:`, error);
-                // Fallback: tenta usar português como fallback
                 if (lang !== 'pt' && translations['pt']) {
                     console.warn(`⚠️ Usando português como fallback para ${lang}`);
                     translations[lang] = translations['pt'];
@@ -443,6 +438,8 @@
                 if (typeof moduleFn === 'function') {
                     try {
                         var result = moduleFn(container, currentLang, getTranslation);
+                        // Guardar a instância do módulo para re-renderização
+                        moduleInstances[moduleKey] = result;
                         resolve(result);
                     } catch (err) {
                         reject(err);
@@ -459,7 +456,6 @@
     }
 
     async function initModules() {
-        // Aguarda traduções carregarem
         if (!translationsLoaded) {
             await initTranslations();
         }
@@ -500,7 +496,61 @@
     }
 
     // ============================================================
-    // 4. NAVEGAÇÃO
+    // 4. RE-RENDERIZAR MÓDULOS QUANDO O IDIOMA MUDA
+    // ============================================================
+    async function refreshModules() {
+        console.log('🔄 Re-renderizando módulos para o idioma:', currentLang);
+        
+        var moduleKeys = Object.keys(MODULES);
+        var promises = [];
+
+        for (var i = 0; i < moduleKeys.length; i++) {
+            var key = moduleKeys[i];
+            var config = MODULES[key];
+            var container = document.getElementById(config.container);
+            
+            if (container) {
+                // Mostrar loading
+                showLoading(container);
+                
+                // Recarregar o módulo
+                var moduleFn = window['module_' + key];
+                if (typeof moduleFn === 'function') {
+                    try {
+                        // Verificar se o módulo tem um método update ou destroy/reload
+                        var instance = moduleInstances[key];
+                        
+                        // Se o módulo tem método update, usamos ele
+                        if (instance && typeof instance.update === 'function') {
+                            // Cada módulo pode ter seu próprio método update
+                            // Mas como cada módulo tem dados diferentes, vamos apenas re-renderizar
+                            // chamando a função novamente e substituindo o container
+                            var newInstance = moduleFn(container, currentLang, getTranslation);
+                            moduleInstances[key] = newInstance;
+                            console.log('✅ Módulo "' + key + '" re-renderizado');
+                        } else if (instance && typeof instance.refresh === 'function') {
+                            // Alguns módulos podem ter refresh
+                            instance.refresh();
+                            console.log('✅ Módulo "' + key + '" atualizado via refresh');
+                        } else {
+                            // Fallback: re-criar o módulo
+                            var newInstance = moduleFn(container, currentLang, getTranslation);
+                            moduleInstances[key] = newInstance;
+                            console.log('✅ Módulo "' + key + '" recriado');
+                        }
+                    } catch (err) {
+                        console.error('❌ Erro ao re-renderizar módulo "' + key + '":', err);
+                    }
+                }
+            }
+        }
+        
+        applyTranslations();
+        console.log('✅ Todos os módulos re-renderizados');
+    }
+
+    // ============================================================
+    // 5. NAVEGAÇÃO
     // ============================================================
     function initNavigation() {
         var navbar = document.getElementById('navbar');
@@ -527,7 +577,7 @@
     }
 
     // ============================================================
-    // 5. LANGUAGE SELECTOR
+    // 6. LANGUAGE SELECTOR (modificado para re-renderizar)
     // ============================================================
     function initLanguageSelector() {
         var buttons = document.querySelectorAll('.language-selector button');
@@ -535,21 +585,30 @@
             btn.addEventListener('click', async function() {
                 buttons.forEach(function(b) { b.classList.remove('active'); });
                 this.classList.add('active');
-                currentLang = this.dataset.lang;
+                var newLang = this.dataset.lang;
                 
-                // Recarrega traduções se necessário
-                if (!translations[currentLang]) {
-                    await loadTranslationFile(currentLang);
+                if (currentLang !== newLang) {
+                    currentLang = newLang;
+                    
+                    // Recarrega traduções se necessário
+                    if (!translations[currentLang]) {
+                        await loadTranslationFile(currentLang);
+                    }
+                    
+                    // Aplica traduções ao cabeçalho e rodapé
+                    applyTranslations();
+                    
+                    // ✅ RE-RENDERIZA TODOS OS MÓDULOS
+                    await refreshModules();
+                    
+                    console.log('🌍 Idioma alterado para: ' + currentLang.toUpperCase());
                 }
-                
-                applyTranslations();
-                console.log('🌍 Idioma alterado para: ' + currentLang.toUpperCase());
             });
         });
     }
 
     // ============================================================
-    // 6. NEWSLETTER
+    // 7. NEWSLETTER
     // ============================================================
     function initNewsletter() {
         var form = document.getElementById('newsletterForm');
@@ -571,7 +630,7 @@
     }
 
     // ============================================================
-    // 7. LIGHTBOX
+    // 8. LIGHTBOX
     // ============================================================
     function initLightbox() {
         var lightbox = document.getElementById('lightbox');
@@ -640,7 +699,7 @@
     }
 
     // ============================================================
-    // 8. VIDEO MODAL
+    // 9. VIDEO MODAL
     // ============================================================
     function initVideoModal() {
         var videoModal = document.getElementById('videoModal');
@@ -687,13 +746,12 @@
     }
 
     // ============================================================
-    // 9. INICIALIZAÇÃO PRINCIPAL
+    // 10. INICIALIZAÇÃO PRINCIPAL
     // ============================================================
     async function init() {
         console.log('🏋️‍♀️ Module Loader iniciado');
         console.log('📦 ' + Object.keys(MODULES).length + ' módulos configurados');
 
-        // Inicializa traduções primeiro
         await initTranslations();
 
         initNavigation();
@@ -713,13 +771,14 @@
     }
 
     // ============================================================
-    // 10. EXPOR PARA USO GLOBAL
+    // 11. EXPOR PARA USO GLOBAL
     // ============================================================
     window.__EB = {
         getTranslation: getTranslation,
         currentLang: function() { return currentLang; },
         applyTranslations: applyTranslations,
         reloadModules: initModules,
+        refreshModules: refreshModules,
         MODULES: MODULES,
         loadTranslationFile: loadTranslationFile,
         translations: translations
@@ -727,5 +786,6 @@
 
     console.log('✅ Module Loader pronto');
     console.log('🔧 API disponível: window.__EB');
+    console.log('🌍 Use window.__EB.refreshModules() para re-renderizar módulos');
 
 })();
