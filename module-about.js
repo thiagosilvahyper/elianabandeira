@@ -1,9 +1,10 @@
 /**
  * Módulo: About (Sobre, Títulos, Calendário)
  * Função global: module_about
+ * Versão: 2.0 - Com traduções completas para todos os elementos
  */
 window.module_about = function(container, lang, t) {
-    console.log('👤 About module iniciado');
+    console.log('👤 About module iniciado (lang: ' + lang + ')');
 
     // ✅ Função auxiliar para obter tradução com fallback
     function getText(key, fallback) {
@@ -14,6 +15,50 @@ window.module_about = function(container, lang, t) {
         return result;
     }
 
+    // ============================================================
+    // TRADUÇÕES PARA TIPOS DE MEDALHAS E STATUS
+    // ============================================================
+    function getTitleTypeLabel(type) {
+        var map = {
+            gold: getText('title.gold', '🥇 Ouro'),
+            silver: getText('title.silver', '🥈 Prata'),
+            bronze: getText('title.bronze', '🥉 Bronze'),
+            olympic: getText('title.olympic', '🏅 Semifinalista'),
+            european: getText('title.european', '🏅 Top 10 Europeu'),
+            national: getText('title.national', '🏆 Título Nacional')
+        };
+        return map[type] || type;
+    }
+
+    function getStatusLabel(status) {
+        var map = {
+            confirmed: getText('calendar.confirmed', 'Confirmado'),
+            pending: getText('calendar.pending', 'Pendente')
+        };
+        return map[status] || status;
+    }
+
+    function getMonthLabel(month) {
+        var map = {
+            'Jan': getText('month.jan', 'Jan'),
+            'Fev': getText('month.fev', 'Fev'),
+            'Mar': getText('month.mar', 'Mar'),
+            'Abr': getText('month.abr', 'Abr'),
+            'Mai': getText('month.mai', 'Mai'),
+            'Jun': getText('month.jun', 'Jun'),
+            'Jul': getText('month.jul', 'Jul'),
+            'Ago': getText('month.ago', 'Ago'),
+            'Set': getText('month.set', 'Set'),
+            'Out': getText('month.out', 'Out'),
+            'Nov': getText('month.nov', 'Nov'),
+            'Dez': getText('month.dez', 'Dez')
+        };
+        return map[month] || month;
+    }
+
+    // ============================================================
+    // DADOS PADRÃO
+    // ============================================================
     var defaultTitles = [
         { id: 1, type: 'gold', competition: 'Jogos Ibero-Americanos', year: '2024', result: '🥇 Ouro' },
         { id: 2, type: 'silver', competition: 'Mundiais Universitários', year: '2023', result: '🥈 Prata' },
@@ -36,6 +81,9 @@ window.module_about = function(container, lang, t) {
     var calendar = defaultCalendar;
     var aboutImage = 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&h=700&fit=crop&crop=center';
 
+    // ============================================================
+    // CARREGAR DADOS DA API
+    // ============================================================
     function loadData() {
         fetch('/api/profile')
             .then(function(r) { return r.ok ? r.json() : null; })
@@ -58,8 +106,11 @@ window.module_about = function(container, lang, t) {
             });
     }
 
+    // ============================================================
+    // RENDERIZAR
+    // ============================================================
     function renderAbout(titlesData, calendarData) {
-        // ✅ Usar getText com fallbacks
+        // ✅ Textos com tradução
         var tag = getText('about.tag', 'A pessoa');
         var title = getText('about.title', 'Quem é');
         var highlight = getText('about.highlight', 'Eliana');
@@ -72,12 +123,25 @@ window.module_about = function(container, lang, t) {
         var value4 = getText('about.value4', 'Portugal');
         var value5 = getText('about.value5', 'Brasil');
 
+        var titlesTag = getText('titles.tag', 'Conquistas');
+        var titlesTitle = getText('titles.title', 'Títulos e');
+        var titlesHighlight = getText('titles.highlight', 'Medalhas');
+
+        var calendarTag = getText('calendar.tag', 'Calendário');
+        var calendarTitle = getText('calendar.title', 'Próximas');
+        var calendarHighlight = getText('calendar.highlight', 'Competições');
+
+        // ✅ Construir HTML
         container.innerHTML = `
             <section id="about" class="section-about">
                 <div class="container">
+
+                    <!-- =============================================
+                    SOBRE
+                    ============================================= -->
                     <div class="about-wrapper">
                         <div class="about-image">
-                            <img id="aboutMainImage" src="${aboutImage}" alt="Eliana Bandeira" loading="lazy" />
+                            <img id="aboutMainImage" src="${aboutImage}" alt="Eliana Bandeira" loading="lazy" onerror="this.style.display='none'" />
                         </div>
                         <div class="about-content">
                             <span class="section-tag">${tag}</span>
@@ -97,51 +161,97 @@ window.module_about = function(container, lang, t) {
                         </div>
                     </div>
 
-                    <div class="titles-grid">
-                        ${titlesData.map(function(item) {
-                            var typeMap = { gold: 'gold', silver: 'silver', bronze: 'bronze', olympic: 'olympic', european: 'european', national: 'national' };
-                            return `
-                                <div class="title-card ${typeMap[item.type] || 'gold'}">
-                                    <div class="title-medal"><i class="fas fa-medal"></i></div>
-                                    <div class="title-competition">${item.competition}</div>
-                                    <div class="title-year">${item.year}</div>
-                                    <div class="title-result">${item.result || '🏅'}</div>
-                                </div>
-                            `;
-                        }).join('')}
+                    <!-- =============================================
+                    TÍTULOS E MEDALHAS
+                    ============================================= -->
+                    <div style="margin-top:4rem;border-top:1px solid var(--gray-border);padding-top:3rem;">
+                        <div class="section-header centered">
+                            <span class="section-tag">${titlesTag}</span>
+                            <h2 class="section-title">
+                                ${titlesTitle} <span class="highlight">${titlesHighlight}</span>
+                            </h2>
+                        </div>
+
+                        <div class="titles-grid">
+                            ${titlesData.map(function(item) {
+                                var typeMap = { gold: 'gold', silver: 'silver', bronze: 'bronze', olympic: 'olympic', european: 'european', national: 'national' };
+                                var typeLabel = getTitleTypeLabel(item.type);
+                                return `
+                                    <div class="title-card ${typeMap[item.type] || 'gold'}">
+                                        <div class="title-medal"><i class="fas fa-medal"></i></div>
+                                        <div class="title-competition">${item.competition}</div>
+                                        <div class="title-year">${item.year}</div>
+                                        <div class="title-result">${typeLabel}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
                     </div>
 
-                    <div class="calendar-timeline">
-                        ${calendarData.map(function(item) {
-                            return `
-                                <div class="calendar-event">
-                                    <div class="calendar-date">
-                                        <span class="month">${item.month}</span>
-                                        <span class="day">${item.day}</span>
+                    <!-- =============================================
+                    CALENDÁRIO
+                    ============================================= -->
+                    <div style="margin-top:4rem;border-top:1px solid var(--gray-border);padding-top:3rem;">
+                        <div class="section-header centered">
+                            <span class="section-tag">${calendarTag}</span>
+                            <h2 class="section-title">
+                                ${calendarTitle} <span class="highlight">${calendarHighlight}</span>
+                            </h2>
+                        </div>
+
+                        <div class="calendar-timeline">
+                            ${calendarData.map(function(item) {
+                                var monthLabel = getMonthLabel(item.month);
+                                var statusLabel = getStatusLabel(item.status);
+                                var statusClass = item.status === 'confirmed' ? 'confirmed' : 'pending';
+                                return `
+                                    <div class="calendar-event">
+                                        <div class="calendar-date">
+                                            <span class="month">${monthLabel}</span>
+                                            <span class="day">${item.day}</span>
+                                        </div>
+                                        <div class="calendar-dot"></div>
+                                        <div class="calendar-info">
+                                            <h4>${item.title}</h4>
+                                            ${item.location ? '<p>' + item.location + '</p>' : ''}
+                                            <span class="calendar-status ${statusClass}">${statusLabel}</span>
+                                        </div>
                                     </div>
-                                    <div class="calendar-dot"></div>
-                                    <div class="calendar-info">
-                                        <h4>${item.title}</h4>
-                                        ${item.location ? '<p>' + item.location + '</p>' : ''}
-                                        <span class="calendar-status ${item.status || 'confirmed'}">${item.status === 'confirmed' ? 'Confirmado' : 'Pendente'}</span>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
+                                `;
+                            }).join('')}
+                        </div>
                     </div>
+
                 </div>
             </section>
         `;
+
+        // ✅ Aplicar traduções aos elementos com data-i18n dentro do módulo
+        if (window.__EB && typeof window.__EB.applyTranslations === 'function') {
+            window.__EB.applyTranslations();
+        }
+
+        console.log('✅ About module renderizado com traduções completas');
     }
 
+    // ============================================================
+    // INICIALIZAR
+    // ============================================================
     loadData();
 
+    // ============================================================
+    // EXPOR API PARA ATUALIZAÇÃO
+    // ============================================================
     return {
         update: function(data) {
             if (data && data.aboutImage) {
                 aboutImage = data.aboutImage;
                 renderAbout(titles, calendar);
             }
+        },
+        // Permitir re-renderizar com novo idioma
+        refresh: function() {
+            renderAbout(titles, calendar);
         }
     };
 };
