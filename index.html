@@ -897,7 +897,7 @@
                     <h4 data-i18n="footer.newsletter">Newsletter</h4>
                     <p data-i18n="footer.newsletter_desc">Receba atualizações sobre a carreira da Eliana.</p>
                     <form class="footer-form" id="newsletterForm">
-                        <input type="email" placeholder="Seu e-mail" required />
+                        <input type="email" data-i18n="newsletter.placeholder" placeholder="Seu e-mail" required />
                         <button type="submit"><i class="fas fa-arrow-right"></i></button>
                     </form>
                 </div>
@@ -931,7 +931,7 @@
     </div>
 
     <!-- ============================================================
-    SCRIPTS - COM TRADUÇÕES EMBUTIDAS
+    SCRIPTS - COM TRADUÇÕES EMBUTIDAS E SISTEMA COMPLETO
     ============================================================ -->
     <script>
         // ============================================================
@@ -946,7 +946,7 @@
                 "nav.gallery": "Galeria",
                 "nav.videos": "Vídeos",
                 "nav.sponsors": "Parceiros",
-                "nav.contact": "Contato",
+                "nav.contact": "Contacto",
                 "nav.cta": "Patrocínio",
                 "nav.logo": "Eliana Bandeira",
                 "footer.brand": "Eliana Bandeira · Atleta Olímpica · Lançamento do Peso",
@@ -1347,7 +1347,6 @@
 
         function getTranslation(key) {
             if (!translations || !translations[currentLang]) {
-                // Fallback: tentar carregar do objeto embutido
                 loadEmbeddedTranslations();
                 if (!translations[currentLang]) {
                     console.warn('⚠️ Tradução não encontrada para:', key);
@@ -1395,9 +1394,10 @@
                         if (window.__EB && typeof window.__EB.refreshModules === 'function') {
                             window.__EB.refreshModules();
                         } else {
-                            // Fallback: recarregar a página para aplicar traduções nos módulos
-                            console.log('🔄 Recarregando módulos...');
-                            // Os módulos serão recarregados pelo module-loader
+                            // Disparar evento personalizado para que os módulos possam reagir
+                            var event = new CustomEvent('languageChanged', { detail: { lang: currentLang } });
+                            document.dispatchEvent(event);
+                            console.log('🔄 Evento languageChanged disparado para módulos');
                         }
                         console.log('🌍 Idioma alterado para:', currentLang.toUpperCase());
                     }
@@ -1571,6 +1571,39 @@
         }
 
         // ============================================================
+        // MUTATION OBSERVER PARA TRADUZIR MÓDULOS CARREGADOS DINAMICAMENTE
+        // ============================================================
+        function initTranslationObserver() {
+            // Observa mudanças no DOM para traduzir novos elementos com data-i18n
+            const observer = new MutationObserver(function(mutations) {
+                let shouldApply = false;
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === 1) { // Elemento
+                            if (node.querySelector && node.querySelector('[data-i18n]')) {
+                                shouldApply = true;
+                            }
+                            if (node.dataset && node.dataset.i18n) {
+                                shouldApply = true;
+                            }
+                        }
+                    });
+                });
+                if (shouldApply) {
+                    console.log('🔄 Novos elementos com data-i18n detetados, aplicando traduções...');
+                    applyTranslations();
+                }
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            return observer;
+        }
+
+        // ============================================================
         // INICIALIZAÇÃO PRINCIPAL
         // ============================================================
         function init() {
@@ -1589,6 +1622,9 @@
             initLightbox();
             initVideoModal();
 
+            // Iniciar observer para traduzir módulos carregados dinamicamente
+            initTranslationObserver();
+
             // Esconder preloader
             var preloader = document.getElementById('preloader');
             if (preloader) {
@@ -1599,6 +1635,7 @@
 
             console.log('✅ Site inicializado com traduções embutidas');
             console.log('🌍 Idioma atual:', currentLang.toUpperCase());
+            console.log('👀 MutationObserver ativo para traduzir módulos dinâmicos');
         }
 
         // Iniciar quando o DOM estiver pronto
@@ -1622,15 +1659,24 @@
                 document.querySelectorAll('.language-selector button').forEach(function(btn) {
                     btn.classList.toggle('active', btn.dataset.lang === lang);
                 });
+                // Notificar módulos
                 if (window.__EB && typeof window.__EB.refreshModules === 'function') {
                     window.__EB.refreshModules();
                 }
+                var event = new CustomEvent('languageChanged', { detail: { lang: currentLang } });
+                document.dispatchEvent(event);
             },
-            translations: translations
+            translations: translations,
+            // Forçar re-tradução após módulos carregarem
+            refreshTranslations: function() {
+                applyTranslations();
+                console.log('🔄 Traduções reaplicadas manualmente');
+            }
         };
 
         console.log('✅ API disponível: window.__EB');
         console.log('🌍 Use window.__EB.setLang("en") para mudar o idioma');
+        console.log('🔄 Use window.__EB.refreshTranslations() para reaplicar traduções');
     </script>
 
     <!-- ============================================================
