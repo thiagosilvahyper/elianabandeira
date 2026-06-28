@@ -35,6 +35,7 @@
   "wa.ranking": "Ranking Mundial",
   "wa.last_comp": "Última Competição",
   "wa.btn": "Ver Perfil Oficial",
+
   "about.tag": "A pessoa",
   "about.title": "Quem é",
   "about.highlight": "Eliana",
@@ -46,6 +47,7 @@
   "about.value3": "Resiliência",
   "about.value4": "Portugal",
   "about.value5": "Brasil",
+
   "gallery.tag": "Galeria",
   "gallery.title": "Momentos",
   "gallery.highlight": "que marcaram",
@@ -54,9 +56,11 @@
   "gallery.competitions": "Competições",
   "gallery.behind": "Bastidores",
   "gallery.events": "Eventos",
+
   "videos.tag": "Multimídia",
   "videos.title": "Vídeos",
   "videos.highlight": "em destaque",
+
   "sponsors.tag": "Parceiros",
   "sponsors.title": "Patrocinadores",
   "sponsors.highlight": "oficiais",
@@ -71,6 +75,7 @@
   "benefits.3_desc": "Projetos sociais e formação em atletismo, conectando Lisboa e Fortaleza.",
   "benefits.4_title": "Retorno de Marca",
   "benefits.4_desc": "Ativação de marca com atleta olímpica que representa autenticidade e excelência.",
+
   "contact.tag": "Contato",
   "contact.title": "Vamos",
   "contact.highlight": "conversar",
@@ -91,6 +96,40 @@
   "contact.form_other": "Outro",
   "contact.form_message": "Mensagem",
   "contact.form_btn": "Enviar Mensagem",
+
   "newsletter.success": "Inscrito com sucesso!",
-  "newsletter.placeholder": "Seu melhor e-mail"
+  "newsletter.placeholder": "Seu melhor e-mail",
+
+  "preloader": "Eliana Bandeira",
+
+  "title.gold": "🥇 Ouro",
+  "title.silver": "🥈 Prata",
+  "title.bronze": "🥉 Bronze",
+  "title.olympic": "🏅 Semifinalista",
+  "title.european": "🏅 Top 10 Europeu",
+  "title.national": "🏆 Título Nacional",
+
+  "calendar.confirmed": "Confirmado",
+  "calendar.pending": "Pendente",
+
+  "month.jan": "Jan",
+  "month.fev": "Fev",
+  "month.mar": "Mar",
+  "month.abr": "Abr",
+  "month.mai": "Mai",
+  "month.jun": "Jun",
+  "month.jul": "Jul",
+  "month.ago": "Ago",
+  "month.set": "Set",
+  "month.out": "Out",
+  "month.nov": "Nov",
+  "month.dez": "Dez",
+
+  "titles.tag": "Conquistas",
+  "titles.title": "Títulos e",
+  "titles.highlight": "Medalhas",
+
+  "calendar.tag": "Calendário",
+  "calendar.title": "Próximas",
+  "calendar.highlight": "Competições"
 }
