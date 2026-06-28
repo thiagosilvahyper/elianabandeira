@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eliana Bandeira · Atleta Olímpica</title>
+
+    <meta name="description" content="Site oficial da atleta olímpica portuguesa Eliana Bandeira." />
+    <link rel="canonical" href="https://elianabandeira.com" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        /* ============================================================
+           RESET E VARIÁVEIS
+           ============================================================ */
+        :root {
+            --white: #FFFFFF;
+            --gray-light: #F7F8FA;
+            --gray-border: #E8EAED;
+            --gray-text: #6B7280;
+            --dark-text: #1A1A2E;
+            --gold-olympic: #D4AF37;
+            --gold-dark: #B8942A;
+            --blue-portugal: #0A5EA8;
+            --radius: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --radius-full: 9999px;
+            --transition-fast: 0.2s ease;
+            --transition-medium: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            --font-primary: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--white);
+            color: var(--dark-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        section {
+            padding: 4rem 0;
+        }
+
+        section:nth-child(odd) {
+            background: var(--white);
+        }
+        section:nth-child(even) {
+            background: var(--gray-light);
+        }
+
+        /* ============================================================
+           PRELOADER
+           ============================================================ */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+
+        #preloader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+
+        .loader-ring div {
+            box-sizing: border-box;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            margin: 8px;
+            border: 3px solid var(--gold-olympic);
+            border-radius: 50%;
+            animation: loader-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-color: var(--gold-olympic) transparent transparent transparent;
+        }
+
+        .loader-ring div:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+        .loader-ring div:nth-child(2) {
+            animation-delay: -0.3s;
+        }
+        .loader-ring div:nth-child(3) {
+            animation-delay: -0.15s;
+        }
+
+        @keyframes loader-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-text {
+            margin-top: 1rem;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0.8rem 0;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid transparent;
+            transition: all var(--transition-medium);
+        }
+
+        .navbar.scrolled {
+            border-bottom-color: var(--gold-olympic);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--dark-text);
+        }
+
+        .nav-logo .logo-text {
+            color: var(--gold-olympic);
+            font-size: 1.4rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+        }
+
+        .nav-links a {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--gray-text);
+            transition: color var(--transition-fast);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold-olympic);
+            transition: width var(--transition-fast);
+        }
+
+        .nav-links a:hover {
+            color: var(--dark-text);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            padding: 0.5rem 1.2rem;
+            background: var(--gold-olympic);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: var(--font-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-cta:hover {
+            background: var(--gold-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 2px;
+            background: var(--dark-text);
+            transition: all var(--transition-fast);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                max-width: 300px;
+                height: 100vh;
+                background: var(--white);
+                flex-direction: column;
+                padding: 4rem 2rem;
+                gap: 1.2rem;
+                box-shadow: -8px 0 40px rgba(0, 0, 0, 0.08);
+                transition: right var(--transition-medium);
+                align-items: flex-start;
+            }
+
+            .nav-links.open {
+                right: 0;
+            }
+
+            .nav-links a {
+                font-size: 1rem;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+        }
+
+        /* ============================================================
+           LANGUAGE SELECTOR
+           ============================================================ */
+        .language-selector {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 4px;
+            border: 1px solid var(--gray-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .language-selector button {
+            background: transparent;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gray-text);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: var(--font-primary);
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .language-selector button:hover {
+            background: var(--gray-light);
+            color: var(--dark-text);
+        }
+
+        .language-selector button.active {
+            background: var(--gold-olympic);
+            color: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 72px;
+                right: 12px;
+                flex-direction: row;
+                gap: 2px;
+                padding: 3px;
+                border-radius: 10px;
+            }
+            .language-selector button {
+                padding: 4px 10px;
+                font-size: 0.6rem;
+                min-width: 30px;
+            }
+        }
+
+        /* ============================================================
+           BOTÕES
+           ============================================================ */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem 2rem;
+            background: var(--gold-olympic);
+            color: var(--white);
+            border: 2px solid var(--gold-olympic);
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: var(--font-primary);
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--gold-olympic);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem 2rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            color: var(--white);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: var(--font-primary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--gold-olympic);
+            color: var(--gold-olympic);
+            transform: translateY(-2px);
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           SECTION HEADERS
+           ============================================================ */
+        .section-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold-olympic);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title .highlight {
+            color: var(--gold-olympic);
+        }
+
+        .section-desc {
+            font-size: 1.05rem;
+            color: var(--gray-text);
+            max-width: 640px;
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-header.centered {
+            text-align: center;
+        }
+
+        .section-header.centered .section-desc {
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            .section-desc {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* ============================================================
+           MÓDULOS
+           ============================================================ */
+        .module-container {
+            min-height: 200px;
+            position: relative;
+        }
+
+        .module-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--gray-text);
+        }
+
+        .module-loading i {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .module-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .module-error i {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            padding: 4rem 0 1.5rem;
+            background: var(--dark-text);
+            color: var(--white);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 2.5rem;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--gold-olympic);
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--white);
+            transition: all var(--transition-fast);
+        }
+
+        .footer-social a:hover {
+            background: var(--gold-olympic);
+            transform: translateY(-3px);
+        }
+
+        .footer-links h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links li {
+            margin-bottom: 6px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            transition: color var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--gold-olympic);
+        }
+
+        .footer-newsletter h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-newsletter p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-form {
+            display: flex;
+            gap: 0;
+        }
+
+        .footer-form input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full) 0 0 var(--radius-full);
+            color: var(--white);
+            font-family: var(--font-primary);
+            font-size: 0.85rem;
+        }
+
+        .footer-form input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .footer-form input:focus {
+            outline: none;
+            border-color: var(--gold-olympic);
+        }
+
+        .footer-form button {
+            padding: 0.7rem 1.2rem;
+            background: var(--gold-olympic);
+            border: none;
+            border-radius: 0 var(--radius-full) var(--radius-full) 0;
+            color: var(--white);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .footer-form button:hover {
+            background: var(--gold-dark);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1.5rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .footer-credits i {
+            color: var(--gold-olympic);
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .footer-social {
+                justify-content: center;
+            }
+            .footer-form {
+                max-width: 300px;
+                margin: 0 auto;
+            }
+        }
+
+        /* ============================================================
+           LIGHTBOX
+           ============================================================ */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 12px;
+            object-fit: contain;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
+
+        .lightbox-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .lightbox-nav:hover {
+            background: var(--gold-olympic);
+        }
+
+        .lightbox-nav.prev {
+            left: 20px;
+        }
+        .lightbox-nav.next {
+            right: 20px;
+        }
+
+        /* ============================================================
+           VIDEO MODAL
+           ============================================================ */
+        .video-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .video-modal.open {
+            display: flex;
+        }
+
+        .video-modal-wrapper {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            padding-bottom: 50.625%;
+            height: 0;
+            background: var(--dark-text);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .video-modal-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
+
+        .video-modal-close:hover {
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    PRELOADER
+    ============================================================ -->
+    <div id="preloader">
+        <div class="loader-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="loader-text" data-i18n="preloader">Eliana Bandeira</div>
+    </div>
+
+    <!-- ============================================================
+    SELETOR DE IDIOMAS
+    ============================================================ -->
+    <div class="language-selector" id="languageSelector">
+        <button class="active" data-lang="pt">PT</button>
+        <button data-lang="es">ES</button>
+        <button data-lang="en">EN</button>
+        <button data-lang="fr">FR</button>
+    </div>
+
+    <!-- ============================================================
+    NAVEGAÇÃO
+    ============================================================ -->
+    <nav id="navbar" class="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">
+                <span class="logo-text">EB</span>
+                <span class="logo-full" data-i18n="nav.logo">Eliana Bandeira</span>
+            </a>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#hero" data-i18n="nav.home">Início</a></li>
+                <li><a href="#trajectory" data-i18n="nav.trajectory">Trajetória</a></li>
+                <li><a href="#performance" data-i18n="nav.performance">Performance</a></li>
+                <li><a href="#about" data-i18n="nav.about">Sobre</a></li>
+                <li><a href="#gallery" data-i18n="nav.gallery">Galeria</a></li>
+                <li><a href="#videos" data-i18n="nav.videos">Vídeos</a></li>
+                <li><a href="#sponsors" data-i18n="nav.sponsors">Parceiros</a></li>
+                <li><a href="#contact" data-i18n="nav.contact">Contacto</a></li>
+            </ul>
+
+            <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+                <i class="fas fa-handshake"></i>
+                <span data-i18n="nav.cta">Patrocínio</span>
+            </button>
+
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+    MÓDULOS (CARREGADOS DINAMICAMENTE)
+    ============================================================ -->
+    <div id="module-hero" class="module-container"></div>
+    <div id="module-trajectory" class="module-container"></div>
+    <div id="module-performance" class="module-container"></div>
+    <div id="module-about" class="module-container"></div>
+    <div id="module-gallery" class="module-container"></div>
+    <div id="module-videos" class="module-container"></div>
+    <div id="module-sponsors" class="module-container"></div>
+    <div id="module-contact" class="module-container"></div>
+
+    <!-- ============================================================
+    FOOTER
+    ============================================================ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">EB</div>
+                    <p data-i18n="footer.brand">Eliana Bandeira · Atleta Olímpica · Lançamento do Peso</p>
+                    <div class="footer-social">
+                        <a href="https://www.instagram.com/elianabandeiraoly" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/@elianabandeiraoly" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/share/1GDMDSL9sp/" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <h4 data-i18n="footer.nav">Navegação</h4>
+                    <ul>
+                        <li><a href="#hero" data-i18n="nav.home">Início</a></li>
+                        <li><a href="#trajectory" data-i18n="nav.trajectory">Trajetória</a></li>
+                        <li><a href="#gallery" data-i18n="nav.gallery">Galeria</a></li>
+                        <li><a href="#videos" data-i18n="nav.videos">Vídeos</a></li>
+                        <li><a href="#contact" data-i18n="nav.contact">Contacto</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4 data-i18n="footer.professional">Profissional</h4>
+                    <ul>
+                        <li><a href="https://worldathletics.org/athletes/portugal/eliana-bandeira-14653395" target="_blank">World Athletics</a></li>
+                        <li><a href="#sponsors" data-i18n="nav.sponsors">Patrocinadores</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-newsletter">
+                    <h4 data-i18n="footer.newsletter">Newsletter</h4>
+                    <p data-i18n="footer.newsletter_desc">Receba atualizações sobre a carreira da Eliana.</p>
+                    <form class="footer-form" id="newsletterForm">
+                        <input type="email" placeholder="Seu e-mail" required />
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p data-i18n="footer.copyright">© 2026 Eliana Bandeira · Todos os direitos reservados</p>
+                <p class="footer-credits" data-i18n="footer.credits">Desenvolvido com ❤️ para a excelência olímpica</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================================
+    LIGHTBOX
+    ============================================================ -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+        <button class="lightbox-nav prev" id="lightboxPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="lightbox-nav next" id="lightboxNext"><i class="fas fa-chevron-right"></i></button>
+        <img src="" alt="Ampliada" id="lightboxImage" />
+    </div>
+
+    <!-- ============================================================
+    VIDEO MODAL
+    ============================================================ -->
+    <div class="video-modal" id="videoModal">
+        <button class="video-modal-close" id="videoModalClose"><i class="fas fa-times"></i></button>
+        <div class="video-modal-wrapper">
+            <iframe id="videoIframe" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script src="modules/module-loader.js"></script>
+
+</body>
+</html>

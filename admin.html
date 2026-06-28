@@ -1,0 +1,3169 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin · Eliana Bandeira</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ============================================================
+           ADMIN — ESTILO COMPLETO (CORRIGIDO)
+           ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --white: #FFFFFF;
+            --gray-light: #F7F8FA;
+            --gray-border: #E8EAED;
+            --gray-text: #6B7280;
+            --dark-text: #1A1A2E;
+            --gold: #D4AF37;
+            --gold-dark: #B8942A;
+            --gold-light: rgba(212, 175, 55, 0.12);
+            --gold-border: rgba(212, 175, 55, 0.2);
+            --blue-portugal: #0A5EA8;
+            --shadow: rgba(0, 0, 0, 0.06);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-light);
+            color: var(--dark-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ============================================================
+           LOGIN
+           ============================================================ */
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 2rem;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #loginScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .login-box {
+            background: var(--white);
+            border: 1px solid var(--gold-border);
+            border-radius: var(--radius-lg);
+            padding: 2.8rem 3rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px var(--shadow);
+        }
+
+        .login-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        .login-logo .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: -1px;
+        }
+        .login-logo .logo-sub {
+            font-size: 0.7rem;
+            color: var(--gray-text);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .login-box h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 0.3rem;
+        }
+        .login-box p {
+            font-size: 0.85rem;
+            color: var(--gray-text);
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            margin-bottom: 1rem;
+        }
+        .form-field label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            padding: 0.8rem 1rem;
+            background: var(--gray-light);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            color: var(--dark-text);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            outline: none;
+        }
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px var(--gold-light);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--gold);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background var(--transition), transform var(--transition);
+        }
+        .btn-login:hover {
+            background: var(--gold-dark);
+            transform: translateY(-2px);
+        }
+        #loginError {
+            display: none;
+            color: #e74c3c;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 0.8rem;
+        }
+
+        /* ============================================================
+           ADMIN LAYOUT
+           ============================================================ */
+        #adminApp {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        #adminApp.visible {
+            display: flex;
+        }
+
+        /* Topbar */
+        .admin-topbar {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-border);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .topbar-logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: -0.5px;
+        }
+        .topbar-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .topbar-subtitle {
+            font-size: 0.75rem;
+            color: var(--gray-text);
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .server-status {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+            color: var(--gray-text);
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-border);
+        }
+        .status-dot.online {
+            background: #27ae60;
+            box-shadow: 0 0 8px rgba(39, 174, 96, 0.4);
+        }
+        .status-dot.offline {
+            background: #e74c3c;
+        }
+
+        .btn-logout-top {
+            padding: 0.5rem 1.2rem;
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--gray-text);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .btn-logout-top:hover {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        /* Content */
+        .admin-content {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 220px;
+            background: var(--white);
+            border-right: 1px solid var(--gray-border);
+            padding: 1.5rem 0;
+            flex-shrink: 0;
+            min-height: calc(100vh - 70px);
+            overflow-y: auto;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+        }
+        .nav-section-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--gray-text);
+            padding: 0.6rem 1.5rem 0.3rem;
+            font-weight: 600;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.65rem 1.5rem;
+            width: 100%;
+            border: none;
+            background: none;
+            color: var(--gray-text);
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+            text-align: left;
+            border-left: 3px solid transparent;
+        }
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .nav-item:hover {
+            color: var(--dark-text);
+            background: var(--gray-light);
+        }
+        .nav-item.active {
+            color: var(--gold);
+            border-left-color: var(--gold);
+            background: var(--gold-light);
+        }
+
+        /* Main panel */
+        .admin-panel {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 70px);
+        }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .kpi-card {
+            background: var(--white);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.4rem;
+            transition: var(--transition);
+        }
+        .kpi-card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 4px 20px var(--shadow);
+            transform: translateY(-2px);
+        }
+        .kpi-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-text);
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark-text);
+            letter-spacing: -0.02em;
+        }
+        .kpi-value.gold {
+            color: var(--gold);
+        }
+
+        /* ============================================================
+           TABELAS
+           ============================================================ */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .section-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .section-header p {
+            font-size: 0.85rem;
+            color: var(--gray-text);
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: var(--gold);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .btn-primary:hover {
+            background: var(--gold-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+        }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: var(--white);
+            color: var(--dark-text);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .btn-secondary:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        .btn-danger {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: transparent;
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .btn-danger:hover {
+            background: rgba(231, 76, 60, 0.08);
+        }
+
+        .table-wrapper {
+            background: var(--white);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        .table-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .table-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .table-count {
+            font-size: 0.8rem;
+            color: var(--gray-text);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            padding: 0.7rem 1rem;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-text);
+            border-bottom: 1px solid var(--gray-border);
+            background: var(--gray-light);
+        }
+        td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--gray-border);
+            font-size: 0.85rem;
+            color: var(--gray-text);
+            vertical-align: middle;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: rgba(212, 175, 55, 0.02);
+        }
+        .td-photo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold-border);
+        }
+        .td-name {
+            color: var(--dark-text);
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .badge-active {
+            background: rgba(39, 174, 96, 0.12);
+            color: #27ae60;
+        }
+        .badge-inactive {
+            background: var(--gray-light);
+            color: var(--gray-text);
+        }
+        .badge-confirmed {
+            background: rgba(39, 174, 96, 0.12);
+            color: #27ae60;
+        }
+        .badge-pending {
+            background: rgba(241, 196, 15, 0.12);
+            color: #f1c40f;
+        }
+        .badge-treinos {
+            background: rgba(52, 152, 219, 0.12);
+            color: #2980b9;
+        }
+        .badge-competicoes {
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+        }
+        .badge-bastidores {
+            background: rgba(142, 68, 173, 0.12);
+            color: #8e44ad;
+        }
+        .badge-eventos {
+            background: rgba(241, 196, 15, 0.12);
+            color: #f39c12;
+        }
+        .badge-ouro {
+            background: rgba(212, 175, 55, 0.15);
+            color: #D4AF37;
+        }
+        .badge-prata {
+            background: rgba(192, 192, 192, 0.15);
+            color: #808080;
+        }
+        .badge-bronze {
+            background: rgba(205, 127, 50, 0.15);
+            color: #CD7F32;
+        }
+        .badge-semifinal {
+            background: rgba(10, 94, 168, 0.12);
+            color: #0A5EA8;
+        }
+        .badge-top10 {
+            background: rgba(0, 51, 153, 0.12);
+            color: #003399;
+        }
+        .badge-nacional {
+            background: rgba(26, 26, 46, 0.08);
+            color: #1A1A2E;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.3rem;
+        }
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--gray-border);
+            border-radius: 6px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-text);
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 0.75rem;
+        }
+        .btn-icon:hover {
+            border-color: var(--gold);
+        }
+        .btn-icon.edit:hover {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+        .btn-icon.del:hover {
+            color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        .empty-row td {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-text);
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 760px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal-head {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--gray-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 1;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+        .modal-head h3 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .modal-close {
+            font-size: 1.2rem;
+            color: var(--gray-text);
+            cursor: pointer;
+            transition: var(--transition);
+            background: none;
+            border: none;
+        }
+        .modal-close:hover {
+            color: var(--dark-text);
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+        .form-grid .full {
+            grid-column: 1 / -1;
+        }
+        .form-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-border);
+        }
+
+        .photo-preview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .photo-preview img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold-border);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--gray-border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+            color: var(--gray-text);
+            cursor: pointer;
+            transition: all var(--transition);
+            background: var(--gray-light);
+            position: relative;
+        }
+        .upload-area:hover {
+            border-color: var(--gold);
+            background: var(--gold-light);
+        }
+        .upload-area.dragover {
+            border-color: var(--gold);
+            background: var(--gold-light);
+            transform: scale(1.01);
+        }
+        .upload-area .upload-icon {
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 0.3rem;
+        }
+        .upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+        .photo-thumb {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--gray-border);
+            aspect-ratio: 1;
+        }
+        .photo-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .photo-thumb .remove-photo {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            border: none;
+            color: #fff;
+            font-size: 0.6rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .photo-thumb .remove-photo:hover {
+            background: #e74c3c;
+        }
+
+        .profile-img-preview {
+            width: 100%;
+            max-width: 200px;
+            border-radius: 12px;
+            border: 2px solid var(--gold-border);
+            object-fit: cover;
+            background: var(--gray-light);
+        }
+
+        .color-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .color-picker-row input[type="color"] {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: 2px solid var(--gray-border);
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+        }
+        .color-picker-row input[type="color"]:hover {
+            border-color: var(--gold);
+        }
+        .color-picker-row .color-hex {
+            font-size: 0.8rem;
+            color: var(--gray-text);
+            font-family: monospace;
+        }
+        .color-picker-row .color-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            min-width: 100px;
+        }
+        .color-picker-row .color-input {
+            flex: 1;
+            max-width: 150px;
+        }
+        .color-picker-row .color-input input {
+            width: 100%;
+            padding: 0.5rem 0.8rem;
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            font-family: monospace;
+            background: var(--white);
+            color: var(--dark-text);
+        }
+        .color-picker-row .color-input input:focus {
+            border-color: var(--gold);
+            outline: none;
+        }
+
+        .colors-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        @media (max-width: 768px) {
+            .colors-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        #toastContainer {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .toast {
+            padding: 0.8rem 1.2rem;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            animation: slideIn 0.3s ease;
+            min-width: 240px;
+            max-width: 360px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            background: var(--white);
+            border: 1px solid var(--gray-border);
+        }
+        .toast.success {
+            border-color: #27ae60;
+            color: #27ae60;
+        }
+        .toast.error {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+        .toast.info {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .toast.out {
+            animation: slideOut 0.3s ease forwards;
+        }
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 180px;
+                font-size: 0.8rem;
+            }
+            .admin-panel {
+                padding: 1rem;
+            }
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .modal-box {
+                max-width: 95%;
+            }
+            .topbar-title {
+                font-size: 0.85rem;
+            }
+            .topbar-subtitle {
+                display: none;
+            }
+            .login-box {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+            .profile-img-preview {
+                max-width: 120px;
+            }
+            .color-picker-row {
+                flex-wrap: wrap;
+            }
+            .color-picker-row .color-label {
+                min-width: 80px;
+                font-size: 0.7rem;
+            }
+            .color-picker-row .color-input {
+                max-width: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-sidebar {
+                display: none;
+            }
+            .admin-topbar {
+                padding: 0.8rem 1rem;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            .kpi-card {
+                padding: 0.8rem 1rem;
+            }
+            .kpi-value {
+                font-size: 1.4rem;
+            }
+            .table-wrapper {
+                overflow-x: auto;
+            }
+            .photos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            }
+            .profile-img-preview {
+                max-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    LOGIN SCREEN
+    ============================================================ -->
+    <div id="loginScreen">
+        <div class="login-box">
+            <div class="login-logo">
+                <span class="logo-text">EB</span>
+                <span class="logo-sub">Eliana Bandeira</span>
+            </div>
+            <h2>Painel de Administração</h2>
+            <p>Introduza as suas credenciais para gerir o site.</p>
+            <form id="loginForm" onsubmit="doLogin(event)">
+                <div class="form-field">
+                    <label>Utilizador</label>
+                    <input type="text" id="loginUser" placeholder="admin" autocomplete="username" value="admin" />
+                </div>
+                <div class="form-field">
+                    <label>Password</label>
+                    <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" value="eliana" />
+                </div>
+                <button type="submit" class="btn-login">Entrar</button>
+                <div id="loginError">Credenciais incorretas. Tente novamente.</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    ADMIN APP
+    ============================================================ -->
+    <div id="adminApp">
+
+        <!-- Topbar -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <span class="topbar-logo">EB</span>
+                <div>
+                    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+                    <div class="topbar-subtitle" id="topbarSubtitle">Visão geral do site</div>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="server-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusLabel">A verificar...</span>
+                </div>
+                <button class="btn-logout-top" onclick="doLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+
+            <!-- Sidebar -->
+            <nav class="admin-sidebar" id="adminSidebar">
+                <div class="nav-section-label">Geral</div>
+                <button class="nav-item active" onclick="showSection('dashboard', this)">
+                    <i class="fas fa-chart-bar"></i> Dashboard
+                </button>
+
+                <div class="nav-section-label">Conteúdo</div>
+                <button class="nav-item" onclick="showSection('fotos', this)">
+                    <i class="fas fa-images"></i> Fotos
+                </button>
+                <button class="nav-item" onclick="showSection('videos', this)">
+                    <i class="fas fa-video"></i> Vídeos
+                </button>
+                <button class="nav-item" onclick="showSection('timeline', this)">
+                    <i class="fas fa-road"></i> Trajetória
+                </button>
+                <button class="nav-item" onclick="showSection('stats', this)">
+                    <i class="fas fa-chart-line"></i> Estatísticas
+                </button>
+                <button class="nav-item" onclick="showSection('titles', this)">
+                    <i class="fas fa-medal"></i> Conquistas / Medalhas
+                </button>
+                <button class="nav-item" onclick="showSection('socialprojects', this)">
+                    <i class="fas fa-heart"></i> Projetos Sociais
+                </button>
+                <button class="nav-item" onclick="showSection('sponsors', this)">
+                    <i class="fas fa-handshake"></i> Patrocinadores
+                </button>
+                <button class="nav-item" onclick="showSection('news', this)">
+                    <i class="fas fa-newspaper"></i> Imprensa
+                </button>
+                <button class="nav-item" onclick="showSection('social', this)">
+                    <i class="fas fa-share-alt"></i> Redes Sociais
+                </button>
+                <button class="nav-item" onclick="showSection('calendar', this)">
+                    <i class="fas fa-calendar"></i> Calendário
+                </button>
+
+                <div class="nav-section-label">Personalização</div>
+                <button class="nav-item" onclick="showSection('profile', this)">
+                    <i class="fas fa-user-circle"></i> Perfil &amp; Imagens
+                </button>
+                <button class="nav-item" onclick="showSection('colors', this)">
+                    <i class="fas fa-palette"></i> Cores do Site
+                </button>
+
+                <div class="nav-section-label">Sistema</div>
+                <button class="nav-item" onclick="showSection('settings', this)">
+                    <i class="fas fa-cog"></i> Definições
+                </button>
+
+                <div style="margin-top:1rem;border-top:1px solid var(--gray-border);padding-top:1rem;">
+                    <button class="nav-item" onclick="window.open('/','_blank')">
+                        <i class="fas fa-external-link-alt"></i> Ver Site
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Main Panel -->
+            <main class="admin-panel" id="mainPanel">
+
+                <!-- ===== DASHBOARD ===== -->
+                <div class="section-panel active" id="panel-dashboard">
+                    <div class="section-header">
+                        <div>
+                            <h2>Dashboard</h2>
+                            <p>Visão geral do conteúdo do site.</p>
+                        </div>
+                        <button class="btn-secondary" onclick="checkServer()">
+                            <i class="fas fa-sync"></i> Verificar Servidor
+                        </button>
+                    </div>
+
+                    <div class="kpi-grid" id="kpiGrid">
+                        <div class="kpi-card"><div class="kpi-label">Fotos</div><div class="kpi-value gold" id="kpi-photos">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Vídeos</div><div class="kpi-value gold" id="kpi-videos">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Trajetória</div><div class="kpi-value" id="kpi-timeline">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Estatísticas</div><div class="kpi-value" id="kpi-stats">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Conquistas</div><div class="kpi-value" id="kpi-titles">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Projetos Sociais</div><div class="kpi-value" id="kpi-socialprojects">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Patrocinadores</div><div class="kpi-value" id="kpi-sponsors">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Notícias</div><div class="kpi-value" id="kpi-news">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Redes Sociais</div><div class="kpi-value" id="kpi-social">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Calendário</div><div class="kpi-value" id="kpi-calendar">—</div></div>
+                    </div>
+
+                    <div style="background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);padding:1.5rem;">
+                        <h4 style="margin-bottom:1rem;font-weight:600;">Ações Rápidas</h4>
+                        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+                            <button class="btn-primary" onclick="showSection('fotos', document.querySelector('.nav-item[onclick*=\"fotos\"]'))">
+                                <i class="fas fa-plus"></i> Adicionar Foto
+                            </button>
+                            <button class="btn-primary" onclick="showSection('videos', document.querySelector('.nav-item[onclick*=\"videos\"]'))">
+                                <i class="fas fa-plus"></i> Adicionar Vídeo
+                            </button>
+                            <button class="btn-primary" onclick="showSection('timeline', document.querySelector('.nav-item[onclick*=\"timeline\"]'))">
+                                <i class="fas fa-plus"></i> Adicionar Evento
+                            </button>
+                            <button class="btn-primary" onclick="showSection('titles', document.querySelector('.nav-item[onclick*=\"titles\"]'))">
+                                <i class="fas fa-plus"></i> Adicionar Conquista
+                            </button>
+                            <button class="btn-primary" onclick="showSection('socialprojects', document.querySelector('.nav-item[onclick*=\"socialprojects\"]'))">
+                                <i class="fas fa-plus"></i> Adicionar Projeto Social
+                            </button>
+                            <button class="btn-secondary" onclick="checkServer()">
+                                <i class="fas fa-sync"></i> Verificar Servidor
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== FOTOS ===== -->
+                <div class="section-panel" id="panel-fotos" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão de Fotos</h2>
+                            <p>Adicione, edite ou remova fotos da galeria.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openPhotoModal()">
+                            <i class="fas fa-plus"></i> Nova Foto
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Fotos</span>
+                            <span class="table-count" id="photoCount">0 fotos</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Imagem</th><th>Título</th><th>Categoria</th><th>Ações</th></tr></thead>
+                            <tbody id="photoTableBody"><tr class="empty-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== VÍDEOS ===== -->
+                <div class="section-panel" id="panel-videos" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão de Vídeos</h2>
+                            <p>Adicione vídeos do YouTube (basta o ID).</p>
+                        </div>
+                        <button class="btn-primary" onclick="openVideoModal()">
+                            <i class="fas fa-plus"></i> Novo Vídeo
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Vídeos</span>
+                            <span class="table-count" id="videoCount">0 vídeos</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Thumbnail</th><th>Título</th><th>Visualizações</th><th>Ações</th></tr></thead>
+                            <tbody id="videoTableBody"><tr class="empty-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== TIMELINE ===== -->
+                <div class="section-panel" id="panel-timeline" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão da Trajetória</h2>
+                            <p>Adicione marcos da carreira da Eliana.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openTimelineModal()">
+                            <i class="fas fa-plus"></i> Novo Marco
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Eventos</span>
+                            <span class="table-count" id="timelineCount">0 eventos</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Ano</th><th>Título</th><th>Descrição</th><th>Local</th><th>Ações</th></tr></thead>
+                            <tbody id="timelineTableBody"><tr class="empty-row"><td colspan="5"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== STATS ===== -->
+                <div class="section-panel" id="panel-stats" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão de Estatísticas</h2>
+                            <p>Números que definem a carreira.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openStatModal()">
+                            <i class="fas fa-plus"></i> Nova Estatística
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Estatísticas</span>
+                            <span class="table-count" id="statCount">0 estatísticas</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Valor</th><th>Rótulo</th><th>Subtítulo</th><th>Ações</th></tr></thead>
+                            <tbody id="statTableBody"><tr class="empty-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== TÍTULOS / CONQUISTAS ===== -->
+                <div class="section-panel" id="panel-titles" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão de Conquistas / Medalhas</h2>
+                            <p>Adicione, edite ou remova títulos e medalhas da carreira.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openTitleModal()">
+                            <i class="fas fa-plus"></i> Nova Conquista
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Conquistas</span>
+                            <span class="table-count" id="titleCount">0 conquistas</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Medalha</th><th>Competição</th><th>Ano</th><th>Resultado</th><th>Ações</th></tr></thead>
+                            <tbody id="titleTableBody"><tr class="empty-row"><td colspan="5"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== PROJETOS SOCIAIS ===== -->
+                <div class="section-panel" id="panel-socialprojects" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão de Projetos Sociais</h2>
+                            <p>Adicione, edite ou remova projetos sociais da atleta.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openSocialProjectModal()">
+                            <i class="fas fa-plus"></i> Novo Projeto Social
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Projetos Sociais</span>
+                            <span class="table-count" id="socialProjectCount">0 projetos</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Imagem</th><th>Título</th><th>Descrição</th><th>Ações</th></tr></thead>
+                            <tbody id="socialProjectTableBody"><tr class="empty-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== SPONSORS ===== -->
+                <div class="section-panel" id="panel-sponsors" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão de Patrocinadores</h2>
+                            <p>Marcas e entidades parceiras.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openSponsorModal()">
+                            <i class="fas fa-plus"></i> Novo Patrocinador
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Patrocinadores</span>
+                            <span class="table-count" id="sponsorCount">0 patrocinadores</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Logo</th><th>Nome</th><th>Ações</th></tr></thead>
+                            <tbody id="sponsorTableBody"><tr class="empty-row"><td colspan="3"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== NEWS ===== -->
+                <div class="section-panel" id="panel-news" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão de Imprensa</h2>
+                            <p>Notícias e artigos sobre a atleta.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openNewsModal()">
+                            <i class="fas fa-plus"></i> Nova Notícia
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Notícias</span>
+                            <span class="table-count" id="newsCount">0 notícias</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Fonte</th><th>Título</th><th>Data</th><th>Ações</th></tr></thead>
+                            <tbody id="newsTableBody"><tr class="empty-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== SOCIAL ===== -->
+                <div class="section-panel" id="panel-social" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão de Redes Sociais</h2>
+                            <p>Perfis e estatísticas das redes.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openSocialModal()">
+                            <i class="fas fa-plus"></i> Nova Rede
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Redes Sociais</span>
+                            <span class="table-count" id="socialCount">0 perfis</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Plataforma</th><th>Handle</th><th>Seguidores</th><th>Ações</th></tr></thead>
+                            <tbody id="socialTableBody"><tr class="empty-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== CALENDAR ===== -->
+                <div class="section-panel" id="panel-calendar" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão do Calendário</h2>
+                            <p>Adicione competições e eventos.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openCalendarModal()">
+                            <i class="fas fa-plus"></i> Nova Competição
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Competições</span>
+                            <span class="table-count" id="calendarCount">0 eventos</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Mês</th><th>Dia</th><th>Evento</th><th>Local</th><th>Status</th><th>Ações</th></tr></thead>
+                            <tbody id="calendarTableBody"><tr class="empty-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> A carregar...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== PERFIL & IMAGENS ===== -->
+                <div class="section-panel" id="panel-profile" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Gestão de Perfil e Imagens</h2>
+                            <p>Atualize as imagens principais do site.</p>
+                        </div>
+                        <button class="btn-primary" onclick="saveProfile()">
+                            <i class="fas fa-save"></i> Guardar Alterações
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Imagens do Site</span>
+                        </div>
+                        <div style="padding:1.5rem;">
+                            <!-- Hero Image -->
+                            <div style="margin-bottom:2rem;border-bottom:1px solid var(--gray-border);padding-bottom:1.5rem;">
+                                <h4 style="margin-bottom:0.8rem;color:var(--gold);">🏆 Hero — Imagem Principal</h4>
+                                <div style="display:grid;grid-template-columns:1fr 2fr;gap:1rem;align-items:center;">
+                                    <div>
+                                        <img id="profileHeroPreview" src="" alt="Hero" class="profile-img-preview" style="aspect-ratio:16/9;" />
+                                    </div>
+                                    <div>
+                                        <div class="form-field" style="margin:0;">
+                                            <label>URL da Imagem Hero</label>
+                                            <input type="url" id="profileHeroImage" placeholder="https://..." />
+                                        </div>
+                                        <div class="upload-area" style="padding:0.8rem;margin-top:0.5rem;">
+                                            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                            <input type="file" id="heroFileInput" accept="image/*" />
+                                            <small>Arraste ou clique para substituir a imagem</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- About Image -->
+                            <div style="margin-bottom:2rem;border-bottom:1px solid var(--gray-border);padding-bottom:1.5rem;">
+                                <h4 style="margin-bottom:0.8rem;color:var(--gold);">👤 Sobre — Foto da Atleta</h4>
+                                <div style="display:grid;grid-template-columns:1fr 2fr;gap:1rem;align-items:center;">
+                                    <div>
+                                        <img id="profileAboutPreview" src="" alt="Sobre" class="profile-img-preview" style="aspect-ratio:3/4;" />
+                                    </div>
+                                    <div>
+                                        <div class="form-field" style="margin:0;">
+                                            <label>URL da Imagem Sobre</label>
+                                            <input type="url" id="profileAboutImage" placeholder="https://..." />
+                                        </div>
+                                        <div class="upload-area" style="padding:0.8rem;margin-top:0.5rem;">
+                                            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                            <input type="file" id="aboutFileInput" accept="image/*" />
+                                            <small>Arraste ou clique para substituir a imagem</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- World Athletics Image -->
+                            <div style="margin-bottom:2rem;border-bottom:1px solid var(--gray-border);padding-bottom:1.5rem;">
+                                <h4 style="margin-bottom:0.8rem;color:var(--gold);">🌍 World Athletics</h4>
+                                <div style="display:grid;grid-template-columns:1fr 2fr;gap:1rem;align-items:center;">
+                                    <div>
+                                        <img id="profileWaPreview" src="" alt="World Athletics" class="profile-img-preview" style="aspect-ratio:3/2;" />
+                                    </div>
+                                    <div>
+                                        <div class="form-field" style="margin:0;">
+                                            <label>URL da Imagem World Athletics</label>
+                                            <input type="url" id="profileWaImage" placeholder="https://..." />
+                                        </div>
+                                        <div class="upload-area" style="padding:0.8rem;margin-top:0.5rem;">
+                                            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                            <input type="file" id="waFileInput" accept="image/*" />
+                                            <small>Arraste ou clique para substituir a imagem</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Speaking Image -->
+                            <div style="margin-bottom:1rem;">
+                                <h4 style="margin-bottom:0.8rem;color:var(--gold);">🎤 Palestras</h4>
+                                <div style="display:grid;grid-template-columns:1fr 2fr;gap:1rem;align-items:center;">
+                                    <div>
+                                        <img id="profileSpeakingPreview" src="" alt="Palestras" class="profile-img-preview" style="aspect-ratio:3/2;" />
+                                    </div>
+                                    <div>
+                                        <div class="form-field" style="margin:0;">
+                                            <label>URL da Imagem Palestras</label>
+                                            <input type="url" id="profileSpeakingImage" placeholder="https://..." />
+                                        </div>
+                                        <div class="upload-area" style="padding:0.8rem;margin-top:0.5rem;">
+                                            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                            <input type="file" id="speakingFileInput" accept="image/*" />
+                                            <small>Arraste ou clique para substituir a imagem</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== CORES DO SITE ===== -->
+                <div class="section-panel" id="panel-colors" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Cores do Site</h2>
+                            <p>Personalize as cores principais do site da Eliana Bandeira.</p>
+                        </div>
+                        <button class="btn-primary" onclick="saveColors()">
+                            <i class="fas fa-save"></i> Guardar Cores
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-header">
+                            <span class="table-title">Paleta de Cores</span>
+                            <span class="table-count">Altere e clique em "Guardar Cores"</span>
+                        </div>
+                        <div style="padding:1.5rem;">
+                            <p style="color:var(--gray-text);margin-bottom:1.5rem;font-size:0.9rem;">
+                                <i class="fas fa-info-circle" style="color:var(--gold);"></i>
+                                As cores serão aplicadas automaticamente em todo o site.
+                            </p>
+
+                            <div style="margin-bottom:1.5rem;border-bottom:1px solid var(--gray-border);padding-bottom:1.5rem;">
+                                <h4 style="margin-bottom:1rem;color:var(--gold);">🌟 Cor Principal (Dourado Olímpico)</h4>
+                                <div class="color-picker-row">
+                                    <span class="color-label">Dourado</span>
+                                    <input type="color" id="colorGold" value="#D4AF37" />
+                                    <div class="color-input">
+                                        <input type="text" id="colorGoldHex" value="#D4AF37" />
+                                    </div>
+                                    <span class="color-hex" id="colorGoldDisplay">#D4AF37</span>
+                                </div>
+                                <div class="color-picker-row">
+                                    <span class="color-label">Dourado Escuro</span>
+                                    <input type="color" id="colorGoldDark" value="#B8942A" />
+                                    <div class="color-input">
+                                        <input type="text" id="colorGoldDarkHex" value="#B8942A" />
+                                    </div>
+                                    <span class="color-hex" id="colorGoldDarkDisplay">#B8942A</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom:1.5rem;border-bottom:1px solid var(--gray-border);padding-bottom:1.5rem;">
+                                <h4 style="margin-bottom:1rem;color:var(--blue-portugal);">🇵🇹 Cores Institucionais</h4>
+                                <div class="color-picker-row">
+                                    <span class="color-label">Azul Portugal</span>
+                                    <input type="color" id="colorBlue" value="#0A5EA8" />
+                                    <div class="color-input">
+                                        <input type="text" id="colorBlueHex" value="#0A5EA8" />
+                                    </div>
+                                    <span class="color-hex" id="colorBlueDisplay">#0A5EA8</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom:1.5rem;border-bottom:1px solid var(--gray-border);padding-bottom:1.5rem;">
+                                <h4 style="margin-bottom:1rem;color:var(--dark-text);">🎨 Cores de Fundo</h4>
+                                <div class="color-picker-row">
+                                    <span class="color-label">Fundo Branco</span>
+                                    <input type="color" id="colorWhite" value="#FFFFFF" />
+                                    <div class="color-input">
+                                        <input type="text" id="colorWhiteHex" value="#FFFFFF" />
+                                    </div>
+                                    <span class="color-hex" id="colorWhiteDisplay">#FFFFFF</span>
+                                </div>
+                                <div class="color-picker-row">
+                                    <span class="color-label">Fundo Cinza Claro</span>
+                                    <input type="color" id="colorGray" value="#F7F8FA" />
+                                    <div class="color-input">
+                                        <input type="text" id="colorGrayHex" value="#F7F8FA" />
+                                    </div>
+                                    <span class="color-hex" id="colorGrayDisplay">#F7F8FA</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:1rem;padding:1.5rem;background:var(--gray-light);border-radius:var(--radius);border:1px solid var(--gray-border);">
+                                <h4 style="margin-bottom:0.8rem;font-size:0.9rem;">Pré-visualização</h4>
+                                <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+                                    <span style="display:inline-block;padding:0.5rem 1.5rem;background:var(--gold);color:var(--white);border-radius:var(--radius);font-weight:600;font-size:0.85rem;" id="previewBtn">Botão Principal</span>
+                                    <span style="display:inline-block;padding:0.5rem 1.5rem;background:var(--gray-light);color:var(--dark-text);border:2px solid var(--gold);border-radius:var(--radius);font-weight:600;font-size:0.85rem;" id="previewBtnOutline">Botão Secundário</span>
+                                    <span style="display:inline-block;padding:0.5rem 1.5rem;background:var(--gold-light);color:var(--gold);border:1px solid var(--gold-border);border-radius:var(--radius);font-weight:600;font-size:0.85rem;" id="previewTag">Tag</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SETTINGS ===== -->
+                <div class="section-panel" id="panel-settings" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Definições</h2>
+                            <p>Informações do servidor e ferramentas.</p>
+                        </div>
+                    </div>
+                    <div class="kpi-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
+                        <div class="kpi-card">
+                            <h4 style="margin-bottom:0.8rem;font-weight:600;">Servidor</h4>
+                            <div id="serverInfo" style="font-size:0.85rem;color:var(--gray-text);line-height:2;">
+                                <i class="fas fa-spinner fa-spin"></i> A carregar...
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <h4 style="margin-bottom:0.8rem;font-weight:600;">Ferramentas</h4>
+                            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                                <button class="btn-secondary" onclick="exportBackup()">
+                                    <i class="fas fa-download"></i> Exportar Backup
+                                </button>
+                                <div style="display:flex;gap:0.5rem;align-items:center;">
+                                    <input type="file" id="importFile" accept=".json" style="font-size:0.8rem;flex:1;" />
+                                    <button class="btn-secondary" onclick="importBackup()">
+                                        <i class="fas fa-upload"></i> Importar
+                                    </button>
+                                </div>
+                                <button class="btn-secondary" onclick="clearCache()">
+                                    <i class="fas fa-broom"></i> Limpar Cache
+                                </button>
+                            </div>
+                            <div id="cacheResult" style="margin-top:0.8rem;font-size:0.8rem;"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — FOTO
+    ============================================================ -->
+    <div class="modal-overlay" id="photoModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="photoModalTitle">Nova Foto</h3>
+                <button class="modal-close" onclick="closeModal('photoModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-field">
+                    <label>Título *</label>
+                    <input type="text" id="photoTitle" placeholder="Ex: Treino explosivo" />
+                </div>
+                <div class="form-field">
+                    <label>Categoria *</label>
+                    <select id="photoCategory">
+                        <option value="treinos">Treinos</option>
+                        <option value="competicoes">Competições</option>
+                        <option value="bastidores">Bastidores</option>
+                        <option value="eventos">Eventos</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>URL da Imagem *</label>
+                    <input type="url" id="photoUrl" placeholder="https://..." />
+                </div>
+                <div class="upload-area" style="margin-top:0.5rem;">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <p><strong>Ou arraste uma imagem</strong></p>
+                    <small>JPG, PNG, WEBP · Máx 5MB</small>
+                    <input type="file" id="photoFileInput" accept="image/*" />
+                </div>
+                <input type="hidden" id="photoEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('photoModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="savePhoto()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — VÍDEO
+    ============================================================ -->
+    <div class="modal-overlay" id="videoModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="videoModalTitle">Novo Vídeo</h3>
+                <button class="modal-close" onclick="closeModal('videoModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-field">
+                    <label>Título *</label>
+                    <input type="text" id="videoTitle" placeholder="Ex: Lançamento 19.08m" />
+                </div>
+                <div class="form-field">
+                    <label>ID do YouTube *</label>
+                    <input type="text" id="videoEmbed" placeholder="Ex: Tv7P9H3QpKk" />
+                    <small style="color:var(--gray-text);">O ID está no URL: youtube.com/watch?v=ID</small>
+                </div>
+                <div class="form-field">
+                    <label>Visualizações (estimado)</label>
+                    <input type="text" id="videoViews" placeholder="Ex: 12.5K" />
+                </div>
+                <input type="hidden" id="videoEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('videoModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveVideo()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — TIMELINE
+    ============================================================ -->
+    <div class="modal-overlay" id="timelineModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="timelineModalTitle">Novo Marco</h3>
+                <button class="modal-close" onclick="closeModal('timelineModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Ano *</label>
+                        <input type="text" id="tlYear" placeholder="2024" />
+                    </div>
+                    <div class="form-field">
+                        <label>Título *</label>
+                        <input type="text" id="tlTitle" placeholder="Ex: Jogos Olímpicos" />
+                    </div>
+                    <div class="form-field full">
+                        <label>Descrição</label>
+                        <textarea id="tlDesc" placeholder="Descrição do marco..."></textarea>
+                    </div>
+                    <div class="form-field full">
+                        <label>Localização</label>
+                        <input type="text" id="tlLocation" placeholder="Ex: Paris, França" />
+                    </div>
+                </div>
+                <input type="hidden" id="tlEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('timelineModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveTimeline()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — STAT
+    ============================================================ -->
+    <div class="modal-overlay" id="statModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="statModalTitle">Nova Estatística</h3>
+                <button class="modal-close" onclick="closeModal('statModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Valor *</label>
+                        <input type="text" id="statValue" placeholder="18.95m" />
+                    </div>
+                    <div class="form-field">
+                        <label>Rótulo *</label>
+                        <input type="text" id="statLabel" placeholder="Recorde Nacional" />
+                    </div>
+                    <div class="form-field full">
+                        <label>Subtítulo</label>
+                        <input type="text" id="statSub" placeholder="Lançamento do Peso" />
+                    </div>
+                </div>
+                <input type="hidden" id="statEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('statModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveStat()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — TÍTULO / CONQUISTA
+    ============================================================ -->
+    <div class="modal-overlay" id="titleModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="titleModalTitle">Nova Conquista</h3>
+                <button class="modal-close" onclick="closeModal('titleModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Medalha / Tipo *</label>
+                        <select id="titleType">
+                            <option value="gold">🥇 Ouro</option>
+                            <option value="silver">🥈 Prata</option>
+                            <option value="bronze">🥉 Bronze</option>
+                            <option value="olympic">🏅 Semifinalista</option>
+                            <option value="european">🏅 Top 10 Europeu</option>
+                            <option value="national">🏆 Título Nacional</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Ano *</label>
+                        <input type="text" id="titleYear" placeholder="2024" />
+                    </div>
+                    <div class="form-field full">
+                        <label>Competição *</label>
+                        <input type="text" id="titleCompetition" placeholder="Ex: Jogos Ibero-Americanos" />
+                    </div>
+                    <div class="form-field full">
+                        <label>Resultado (texto)</label>
+                        <input type="text" id="titleResult" placeholder="Ex: Ouro, Semifinalista, 4× Títulos" />
+                    </div>
+                </div>
+                <input type="hidden" id="titleEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('titleModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveTitle()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — PROJETO SOCIAL
+    ============================================================ -->
+    <div class="modal-overlay" id="socialProjectModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="socialProjectModalTitle">Novo Projeto Social</h3>
+                <button class="modal-close" onclick="closeModal('socialProjectModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-field">
+                    <label>Título *</label>
+                    <input type="text" id="spTitle" placeholder="Ex: Atletismo sem Fronteiras" />
+                </div>
+                <div class="form-field">
+                    <label>Descrição</label>
+                    <textarea id="spDesc" placeholder="Descrição do projeto social..." rows="3"></textarea>
+                </div>
+                <div class="form-field">
+                    <label>URL da Imagem</label>
+                    <input type="url" id="spImage" placeholder="https://..." />
+                </div>
+                <div class="upload-area" style="margin-top:0.5rem;">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <p><strong>Ou arraste uma imagem</strong></p>
+                    <input type="file" id="spFileInput" accept="image/*" />
+                </div>
+                <input type="hidden" id="spEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('socialProjectModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveSocialProject()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — SPONSOR
+    ============================================================ -->
+    <div class="modal-overlay" id="sponsorModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="sponsorModalTitle">Novo Patrocinador</h3>
+                <button class="modal-close" onclick="closeModal('sponsorModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-field">
+                    <label>Nome *</label>
+                    <input type="text" id="sponsorName" placeholder="Ex: Sporting CP" />
+                </div>
+                <div class="form-field">
+                    <label>URL do Logótipo *</label>
+                    <input type="url" id="sponsorLogo" placeholder="https://.../logo.svg" />
+                </div>
+                <input type="hidden" id="sponsorEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('sponsorModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveSponsor()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — NEWS
+    ============================================================ -->
+    <div class="modal-overlay" id="newsModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="newsModalTitle">Nova Notícia</h3>
+                <button class="modal-close" onclick="closeModal('newsModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Fonte *</label>
+                        <input type="text" id="newsSource" placeholder="Record" />
+                    </div>
+                    <div class="form-field">
+                        <label>Data *</label>
+                        <input type="text" id="newsDate" placeholder="15 mar 2026" />
+                    </div>
+                    <div class="form-field full">
+                        <label>Título da Notícia *</label>
+                        <input type="text" id="newsHeadline" placeholder="Título da notícia..." />
+                    </div>
+                </div>
+                <input type="hidden" id="newsEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('newsModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveNews()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — SOCIAL
+    ============================================================ -->
+    <div class="modal-overlay" id="socialModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="socialModalTitle">Nova Rede Social</h3>
+                <button class="modal-close" onclick="closeModal('socialModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Plataforma *</label>
+                        <select id="socialPlatform">
+                            <option value="Instagram">Instagram</option>
+                            <option value="YouTube">YouTube</option>
+                            <option value="Facebook">Facebook</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Seguidores *</label>
+                        <input type="text" id="socialFollowers" placeholder="145K" />
+                    </div>
+                    <div class="form-field full">
+                        <label>Handle / Username</label>
+                        <input type="text" id="socialHandle" placeholder="@elianabandeiraoly" />
+                    </div>
+                    <div class="form-field full">
+                        <label>URL do Perfil</label>
+                        <input type="url" id="socialUrl" placeholder="https://instagram.com/..." />
+                    </div>
+                </div>
+                <input type="hidden" id="socialEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('socialModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveSocial()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MODAL — CALENDAR
+    ============================================================ -->
+    <div class="modal-overlay" id="calendarModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="calendarModalTitle">Nova Competição</h3>
+                <button class="modal-close" onclick="closeModal('calendarModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Mês *</label>
+                        <select id="calMonth">
+                            <option value="Jan">Jan</option>
+                            <option value="Fev">Fev</option>
+                            <option value="Mar">Mar</option>
+                            <option value="Abr">Abr</option>
+                            <option value="Mai">Mai</option>
+                            <option value="Jun">Jun</option>
+                            <option value="Jul">Jul</option>
+                            <option value="Ago">Ago</option>
+                            <option value="Set">Set</option>
+                            <option value="Out">Out</option>
+                            <option value="Nov">Nov</option>
+                            <option value="Dez">Dez</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Dia *</label>
+                        <input type="number" id="calDay" placeholder="15" min="1" max="31" />
+                    </div>
+                    <div class="form-field full">
+                        <label>Título *</label>
+                        <input type="text" id="calTitle" placeholder="Ex: Campeonato Nacional" />
+                    </div>
+                    <div class="form-field full">
+                        <label>Localização</label>
+                        <input type="text" id="calLocation" placeholder="Ex: Lisboa, Portugal" />
+                    </div>
+                    <div class="form-field">
+                        <label>Status</label>
+                        <select id="calStatus">
+                            <option value="confirmed">Confirmado</option>
+                            <option value="pending">Pendente</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="hidden" id="calEditId" />
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('calendarModal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveCalendar()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    TOAST
+    ============================================================ -->
+    <div id="toastContainer"></div>
+
+    <!-- ============================================================
+    JAVASCRIPT — COMPLETO
+    ============================================================ -->
+    <script>
+        'use strict';
+
+        // ============================================================
+        // CONFIG
+        // ============================================================
+        const API_KEY = 'imperare2024';
+        const CREDENTIALS = { admin: 'eliana', eliana: 'eliana' };
+        let currentCollection = '';
+        let collectionData = [];
+        let profileData = {};
+        let colorsData = {};
+
+        // ============================================================
+        // AUTH
+        // ============================================================
+        function doLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            const err = document.getElementById('loginError');
+            if (CREDENTIALS[user] && CREDENTIALS[user] === pass) {
+                err.style.display = 'none';
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminApp').classList.add('visible');
+                initAdmin();
+            } else {
+                err.style.display = 'block';
+                document.getElementById('loginPass').value = '';
+            }
+        }
+
+        function doLogout() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('adminApp').classList.remove('visible');
+            document.getElementById('loginPass').value = '';
+        }
+
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
+        const sectionMeta = {
+            dashboard: ['Dashboard', 'Visão geral do site'],
+            fotos: ['Fotos', 'Gestão da galeria de imagens'],
+            videos: ['Vídeos', 'Gestão de vídeos do YouTube'],
+            timeline: ['Trajetória', 'Linha do tempo da carreira'],
+            stats: ['Estatísticas', 'Números da carreira'],
+            titles: ['Conquistas / Medalhas', 'Títulos e medalhas da carreira'],
+            socialprojects: ['Projetos Sociais', 'Projetos sociais da atleta'],
+            sponsors: ['Patrocinadores', 'Marcas e entidades parceiras'],
+            news: ['Imprensa', 'Notícias e artigos'],
+            social: ['Redes Sociais', 'Perfis e estatísticas'],
+            calendar: ['Calendário', 'Competições e eventos'],
+            profile: ['Perfil & Imagens', 'Imagens principais do site'],
+            colors: ['Cores do Site', 'Personalize a paleta de cores'],
+            settings: ['Definições', 'Configurações do sistema']
+        };
+
+        const collectionMap = {
+            fotos: 'photos',
+            videos: 'videos',
+            timeline: 'timeline',
+            stats: 'stats',
+            titles: 'titles',
+            socialprojects: 'socialprojects',
+            sponsors: 'sponsors',
+            news: 'news',
+            social: 'social',
+            calendar: 'calendar',
+            profile: 'profile',
+            colors: 'colors'
+        };
+
+        function showSection(id, btn) {
+            document.querySelectorAll('.section-panel').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const panel = document.getElementById('panel-' + id);
+            if (panel) panel.style.display = 'block';
+            if (btn) btn.classList.add('active');
+            const meta = sectionMeta[id] || [id, ''];
+            document.getElementById('topbarTitle').textContent = meta[0];
+            document.getElementById('topbarSubtitle').textContent = meta[1];
+            currentCollection = id;
+            if (id === 'profile') {
+                loadProfile();
+            } else if (id === 'colors') {
+                loadColors();
+            } else if (id !== 'dashboard' && id !== 'settings') {
+                loadCollection(id);
+            }
+            if (id === 'settings') loadServerInfo();
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        function initAdmin() {
+            checkServer();
+            loadDashboard();
+            setInterval(checkServer, 30000);
+        }
+
+        // ============================================================
+        // SERVER STATUS
+        // ============================================================
+        async function checkServer() {
+            const dot = document.getElementById('statusDot');
+            const label = document.getElementById('statusLabel');
+            try {
+                const r = await fetch('/api/health', { headers: { 'X-API-Key': API_KEY } });
+                if (r.ok) {
+                    dot.className = 'status-dot online';
+                    label.textContent = 'Servidor online';
+                } else throw new Error();
+            } catch {
+                dot.className = 'status-dot offline';
+                label.textContent = 'Servidor offline';
+            }
+        }
+
+        // ============================================================
+        // DASHBOARD
+        // ============================================================
+        async function loadDashboard() {
+            try {
+                const r = await fetch('/api/stats', { headers: { 'X-API-Key': API_KEY } });
+                if (!r.ok) throw new Error();
+                const d = await r.json();
+                document.getElementById('kpi-photos').textContent = d.photos || 0;
+                document.getElementById('kpi-videos').textContent = d.videos || 0;
+                document.getElementById('kpi-timeline').textContent = d.timeline || 0;
+                document.getElementById('kpi-stats').textContent = d.stats || 0;
+                document.getElementById('kpi-titles').textContent = d.titles || 0;
+                document.getElementById('kpi-socialprojects').textContent = d.socialprojects || 0;
+                document.getElementById('kpi-sponsors').textContent = d.sponsors || 0;
+                document.getElementById('kpi-news').textContent = d.news || 0;
+                document.getElementById('kpi-social').textContent = d.social || 0;
+                document.getElementById('kpi-calendar').textContent = d.calendar || 0;
+            } catch {
+                toast('Erro ao carregar dashboard', 'error');
+            }
+        }
+
+        // ============================================================
+        // LOAD COLLECTION
+        // ============================================================
+        async function loadCollection(name) {
+            const apiName = collectionMap[name] || name;
+            try {
+                const r = await fetch('/api/' + apiName, { headers: { 'X-API-Key': API_KEY } });
+                if (!r.ok) throw new Error();
+                const data = await r.json();
+                collectionData = data;
+                renderTable(name, data);
+            } catch {
+                collectionData = [];
+                renderTable(name, []);
+                toast('Erro ao carregar dados', 'error');
+            }
+        }
+
+        // ============================================================
+        // RENDER TABLES
+        // ============================================================
+        function renderTable(name, data) {
+            const map = {
+                fotos: { id: 'photoTableBody', count: 'photoCount', fields: ['url', 'title', 'category'], badge: 'category' },
+                videos: { id: 'videoTableBody', count: 'videoCount', fields: ['embed', 'title', 'views'] },
+                timeline: { id: 'timelineTableBody', count: 'timelineCount', fields: ['year', 'title', 'desc', 'location'] },
+                stats: { id: 'statTableBody', count: 'statCount', fields: ['value', 'label', 'sub'] },
+                titles: { id: 'titleTableBody', count: 'titleCount', fields: ['type', 'competition', 'year', 'result'],
+                    badge: 'type' },
+                socialprojects: { id: 'socialProjectTableBody', count: 'socialProjectCount', fields: ['image', 'title',
+                        'desc'
+                    ] },
+                sponsors: { id: 'sponsorTableBody', count: 'sponsorCount', fields: ['logo', 'name'] },
+                news: { id: 'newsTableBody', count: 'newsCount', fields: ['source', 'headline', 'date'] },
+                social: { id: 'socialTableBody', count: 'socialCount', fields: ['platform', 'handle', 'followers'] },
+                calendar: { id: 'calendarTableBody', count: 'calendarCount', fields: ['month', 'day', 'title', 'location',
+                        'status'
+                    ], badge: 'status' }
+            };
+
+            const config = map[name];
+            if (!config) return;
+            const tbody = document.getElementById(config.id);
+            const count = document.getElementById(config.count);
+            const labels = {
+                fotos: 'fotos',
+                videos: 'vídeos',
+                timeline: 'eventos',
+                stats: 'estatísticas',
+                titles: 'conquistas',
+                socialprojects: 'projetos',
+                sponsors: 'patrocinadores',
+                news: 'notícias',
+                social: 'perfis',
+                calendar: 'eventos'
+            };
+            count.textContent = data.length + ' ' + (labels[name] || 'itens');
+
+            if (!data.length) {
+                tbody.innerHTML = '<tr class="empty-row"><td colspan="' + (config.fields.length + 1) +
+                    '"><i class="fas fa-inbox"></i> Nenhum item cadastrado.</td></tr>';
+                return;
+            }
+
+            const badgeMap = {
+                treinos: 'badge-treinos',
+                competicoes: 'badge-competicoes',
+                bastidores: 'badge-bastidores',
+                eventos: 'badge-eventos',
+                confirmed: 'badge-confirmed',
+                pending: 'badge-pending',
+                gold: 'badge-ouro',
+                silver: 'badge-prata',
+                bronze: 'badge-bronze',
+                olympic: 'badge-semifinal',
+                european: 'badge-top10',
+                national: 'badge-nacional'
+            };
+
+            const iconMap = {
+                gold: '🥇',
+                silver: '🥈',
+                bronze: '🥉',
+                olympic: '🏅',
+                european: '🏅',
+                national: '🏆'
+            };
+
+            const typeLabelMap = {
+                gold: 'Ouro',
+                silver: 'Prata',
+                bronze: 'Bronze',
+                olympic: 'Semifinalista',
+                european: 'Top 10 Europeu',
+                national: 'Título Nacional'
+            };
+
+            tbody.innerHTML = data.map(item => {
+                let cells = '';
+                config.fields.forEach(f => {
+                    if (f === 'url' || f === 'logo' || f === 'image') {
+                        cells +=
+                            `<td class="td-photo"><img src="${esc(item[f])}" alt="" onerror="this.src='https://ui-avatars.com/api/?name=Logo&background=d4af37&color=fff&size=128'"></td>`;
+                    } else if (f === 'embed') {
+                        cells +=
+                            `<td><img src="https://img.youtube.com/vi/${esc(item[f])}/hqdefault.jpg" alt="" style="width:60px;height:40px;object-fit:cover;border-radius:4px;"></td>`;
+                    } else if (f === 'category') {
+                        const badgeClass = badgeMap[item[f]] || 'badge-inactive';
+                        const label = item[f] === 'treinos' ? 'Treinos' :
+                            item[f] === 'competicoes' ? 'Competições' :
+                            item[f] === 'bastidores' ? 'Bastidores' :
+                            item[f] === 'eventos' ? 'Eventos' : item[f];
+                        cells += `<td><span class="badge ${badgeClass}">${label}</span></td>`;
+                    } else if (f === 'type') {
+                        const badgeClass = badgeMap[item[f]] || 'badge-inactive';
+                        const icon = iconMap[item[f]] || '🏅';
+                        const label = typeLabelMap[item[f]] || item[f];
+                        cells += `<td><span class="badge ${badgeClass}">${icon} ${label}</span></td>`;
+                    } else if (f === 'status') {
+                        const badgeClass = badgeMap[item[f]] || 'badge-inactive';
+                        const label = item[f] === 'confirmed' ? 'Confirmado' :
+                            item[f] === 'pending' ? 'Pendente' : item[f];
+                        cells += `<td><span class="badge ${badgeClass}">${label}</span></td>`;
+                    } else if (f === 'desc') {
+                        const desc = item[f] || '';
+                        cells += `<td>${desc.length > 60 ? desc.substring(0, 60) + '...' : desc}</td>`;
+                    } else {
+                        cells += `<td>${esc(item[f])}</td>`;
+                    }
+                });
+                return `<tr>
+                            ${cells}
+                            <td><div class="action-btns">
+                                <button class="btn-icon edit" onclick="editItem('${name}',${item.id})" title="Editar"><i class="fas fa-pen"></i></button>
+                                <button class="btn-icon del" onclick="deleteItem('${name}',${item.id})" title="Remover"><i class="fas fa-trash"></i></button>
+                            </div></td>
+                        </tr>`;
+            }).join('');
+        }
+
+        // ============================================================
+        // CRUD OPERATIONS
+        // ============================================================
+        async function deleteItem(collection, id) {
+            if (!confirm('Tem a certeza que pretende eliminar este item?')) return;
+            const apiName = collectionMap[collection] || collection;
+            try {
+                const r = await fetch(`/api/${apiName}/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-API-Key': API_KEY }
+                });
+                if (!r.ok) throw new Error();
+                toast('Item removido com sucesso!', 'success');
+                loadCollection(collection);
+                loadDashboard();
+            } catch {
+                toast('Erro ao remover item', 'error');
+            }
+        }
+
+        function editItem(collection, id) {
+            const item = collectionData.find(i => i.id === id);
+            if (!item) return;
+            if (collection === 'fotos') openPhotoModal(item);
+            else if (collection === 'videos') openVideoModal(item);
+            else if (collection === 'timeline') openTimelineModal(item);
+            else if (collection === 'stats') openStatModal(item);
+            else if (collection === 'titles') openTitleModal(item);
+            else if (collection === 'socialprojects') openSocialProjectModal(item);
+            else if (collection === 'sponsors') openSponsorModal(item);
+            else if (collection === 'news') openNewsModal(item);
+            else if (collection === 'social') openSocialModal(item);
+            else if (collection === 'calendar') openCalendarModal(item);
+        }
+
+        // ============================================================
+        // PERFIL & IMAGENS
+        // ============================================================
+        async function loadProfile() {
+            try {
+                const r = await fetch('/api/profile', { headers: { 'X-API-Key': API_KEY } });
+                if (!r.ok) throw new Error();
+                const data = await r.json();
+                profileData = data;
+                renderProfile(data);
+            } catch {
+                profileData = {
+                    id: 1,
+                    heroImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&h=900&fit=crop&crop=center',
+                    aboutImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&h=700&fit=crop&crop=center',
+                    waImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=400&fit=crop&crop=center',
+                    speakingImage: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&h=400&fit=crop'
+                };
+                renderProfile(profileData);
+                toast('Erro ao carregar perfil, usando dados de fallback', 'error');
+            }
+        }
+
+        function renderProfile(data) {
+            const heroPreview = document.getElementById('profileHeroPreview');
+            const heroInput = document.getElementById('profileHeroImage');
+            if (data.heroImage) {
+                heroPreview.src = data.heroImage;
+                heroInput.value = data.heroImage;
+            }
+
+            const aboutPreview = document.getElementById('profileAboutPreview');
+            const aboutInput = document.getElementById('profileAboutImage');
+            if (data.aboutImage) {
+                aboutPreview.src = data.aboutImage;
+                aboutInput.value = data.aboutImage;
+            }
+
+            const waPreview = document.getElementById('profileWaPreview');
+            const waInput = document.getElementById('profileWaImage');
+            if (data.waImage) {
+                waPreview.src = data.waImage;
+                waInput.value = data.waImage;
+            }
+
+            const speakingPreview = document.getElementById('profileSpeakingPreview');
+            const speakingInput = document.getElementById('profileSpeakingImage');
+            if (data.speakingImage) {
+                speakingPreview.src = data.speakingImage;
+                speakingInput.value = data.speakingImage;
+            }
+        }
+
+        async function saveProfile() {
+            const body = {
+                heroImage: document.getElementById('profileHeroImage').value.trim(),
+                aboutImage: document.getElementById('profileAboutImage').value.trim(),
+                waImage: document.getElementById('profileWaImage').value.trim(),
+                speakingImage: document.getElementById('profileSpeakingImage').value.trim()
+            };
+
+            if (!body.heroImage || !body.aboutImage || !body.waImage || !body.speakingImage) {
+                toast('Todas as imagens são obrigatórias', 'error');
+                return;
+            }
+
+            try {
+                const apiName = 'profile';
+                const method = profileData.id ? 'PUT' : 'POST';
+                const endpoint = profileData.id ? `/api/${apiName}/${profileData.id}` : '/api/' + apiName;
+
+                const response = await fetch(endpoint, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) throw new Error();
+                toast('Imagens atualizadas com sucesso!', 'success');
+                loadProfile();
+                loadDashboard();
+            } catch {
+                toast('Erro ao guardar imagens', 'error');
+            }
+        }
+
+        // ============================================================
+        // CORES DO SITE
+        // ============================================================
+        async function loadColors() {
+            try {
+                const r = await fetch('/api/colors', { headers: { 'X-API-Key': API_KEY } });
+                if (!r.ok) throw new Error();
+                const data = await r.json();
+                colorsData = data;
+                renderColors(data);
+            } catch {
+                colorsData = {
+                    gold: '#D4AF37',
+                    goldDark: '#B8942A',
+                    blue: '#0A5EA8',
+                    white: '#FFFFFF',
+                    gray: '#F7F8FA'
+                };
+                renderColors(colorsData);
+                toast('Erro ao carregar cores, usando padrão', 'error');
+            }
+        }
+
+        function renderColors(data) {
+            const colorMap = {
+                colorGold: data.gold || '#D4AF37',
+                colorGoldDark: data.goldDark || '#B8942A',
+                colorBlue: data.blue || '#0A5EA8',
+                colorWhite: data.white || '#FFFFFF',
+                colorGray: data.gray || '#F7F8FA'
+            };
+
+            Object.keys(colorMap).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = colorMap[id];
+                const hexEl = document.getElementById(id + 'Hex');
+                if (hexEl) hexEl.value = colorMap[id];
+                const displayEl = document.getElementById(id + 'Display');
+                if (displayEl) displayEl.textContent = colorMap[id];
+            });
+
+            updatePreview(colorMap);
+        }
+
+        function updatePreview(colors) {
+            const previewBtn = document.getElementById('previewBtn');
+            const previewOutline = document.getElementById('previewBtnOutline');
+            const previewTag = document.getElementById('previewTag');
+
+            if (previewBtn) {
+                previewBtn.style.background = colors.colorGold || '#D4AF37';
+                previewBtn.style.color = '#FFFFFF';
+            }
+            if (previewOutline) {
+                previewOutline.style.borderColor = colors.colorGold || '#D4AF37';
+                previewOutline.style.color = colors.colorGold || '#D4AF37';
+            }
+            if (previewTag) {
+                previewTag.style.background = colors.colorGold ? `rgba(${hexToRgb(colors.colorGold)},0.12)` : 'rgba(212,175,55,0.12)';
+                previewTag.style.color = colors.colorGold || '#D4AF37';
+            }
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}` : '212,175,55';
+        }
+
+        // Sincronizar campos de cor
+        document.querySelectorAll('.color-picker-row input[type="color"]').forEach(input => {
+            input.addEventListener('input', function() {
+                const id = this.id;
+                const hexId = id + 'Hex';
+                const displayId = id + 'Display';
+                const hexEl = document.getElementById(hexId);
+                const displayEl = document.getElementById(displayId);
+                if (hexEl) hexEl.value = this.value;
+                if (displayEl) displayEl.textContent = this.value;
+                const colors = {
+                    colorGold: document.getElementById('colorGold').value,
+                    colorGoldDark: document.getElementById('colorGoldDark').value,
+                    colorBlue: document.getElementById('colorBlue').value,
+                    colorWhite: document.getElementById('colorWhite').value,
+                    colorGray: document.getElementById('colorGray').value
+                };
+                updatePreview(colors);
+            });
+        });
+
+        document.querySelectorAll('.color-picker-row .color-input input').forEach(input => {
+            input.addEventListener('input', function() {
+                const id = this.id.replace('Hex', '');
+                const colorEl = document.getElementById(id);
+                const displayEl = document.getElementById(id + 'Display');
+                if (colorEl && this.value.match(/^#[0-9a-fA-F]{6}$/)) {
+                    colorEl.value = this.value;
+                    if (displayEl) displayEl.textContent = this.value;
+                    const colors = {
+                        colorGold: document.getElementById('colorGold').value,
+                        colorGoldDark: document.getElementById('colorGoldDark').value,
+                        colorBlue: document.getElementById('colorBlue').value,
+                        colorWhite: document.getElementById('colorWhite').value,
+                        colorGray: document.getElementById('colorGray').value
+                    };
+                    updatePreview(colors);
+                }
+            });
+        });
+
+        async function saveColors() {
+            const body = {
+                gold: document.getElementById('colorGold').value,
+                goldDark: document.getElementById('colorGoldDark').value,
+                blue: document.getElementById('colorBlue').value,
+                white: document.getElementById('colorWhite').value,
+                gray: document.getElementById('colorGray').value
+            };
+
+            try {
+                const apiName = 'colors';
+                const method = colorsData.id ? 'PUT' : 'POST';
+                const endpoint = colorsData.id ? `/api/${apiName}/${colorsData.id}` : '/api/' + apiName;
+
+                const response = await fetch(endpoint, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) throw new Error();
+                toast('Cores atualizadas com sucesso! 🎨', 'success');
+                loadColors();
+                if (confirm('Cores guardadas! Deseja recarregar o site para ver as alterações?')) {
+                    window.open('/', '_blank');
+                }
+            } catch {
+                toast('Erro ao guardar cores', 'error');
+            }
+        }
+
+        // ============================================================
+        // UPLOAD DE IMAGENS
+        // ============================================================
+        function setupProfileUpload(inputId, previewId, urlId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            input.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.getElementById(previewId);
+                        const urlField = document.getElementById(urlId);
+                        if (preview) preview.src = e.target.result;
+                        if (urlField) urlField.value = e.target.result;
+                        toast('Imagem carregada! Clique em "Guardar".', 'success');
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+
+        // ============================================================
+        // FOTO CRUD
+        // ============================================================
+        function openPhotoModal(item) {
+            document.getElementById('photoModalTitle').textContent = item ? 'Editar Foto' : 'Nova Foto';
+            document.getElementById('photoEditId').value = item ? item.id : '';
+            document.getElementById('photoTitle').value = item ? item.title : '';
+            document.getElementById('photoCategory').value = item ? item.category : 'treinos';
+            document.getElementById('photoUrl').value = item ? item.url : '';
+            openModal('photoModal');
+        }
+
+        async function savePhoto() {
+            const id = document.getElementById('photoEditId').value;
+            const title = document.getElementById('photoTitle').value.trim();
+            const category = document.getElementById('photoCategory').value;
+            const fileInput = document.getElementById('photoFileInput');
+            let url = document.getElementById('photoUrl').value.trim();
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    await savePhotoData(id, title, category, e.target.result);
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+
+            if (!title || !url) { toast('Preencha título e URL da imagem', 'error'); return; }
+            await savePhotoData(id, title, category, url);
+        }
+
+        async function savePhotoData(id, title, category, url) {
+            const body = { title, category, url };
+            const apiName = 'photos';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Foto atualizada!' : 'Foto adicionada!', 'success');
+                closeModal('photoModal');
+                loadCollection('fotos');
+                loadDashboard();
+                document.getElementById('photoFileInput').value = '';
+            } catch {
+                toast('Erro ao guardar foto', 'error');
+            }
+        }
+
+        document.getElementById('photoFileInput').addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('photoUrl').value = e.target.result;
+                    toast('Imagem carregada!', 'success');
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // ============================================================
+        // VÍDEO CRUD
+        // ============================================================
+        function openVideoModal(item) {
+            document.getElementById('videoModalTitle').textContent = item ? 'Editar Vídeo' : 'Novo Vídeo';
+            document.getElementById('videoEditId').value = item ? item.id : '';
+            document.getElementById('videoTitle').value = item ? item.title : '';
+            document.getElementById('videoEmbed').value = item ? item.embed : '';
+            document.getElementById('videoViews').value = item ? item.views : '';
+            openModal('videoModal');
+        }
+
+        async function saveVideo() {
+            const id = document.getElementById('videoEditId').value;
+            const title = document.getElementById('videoTitle').value.trim();
+            const embed = document.getElementById('videoEmbed').value.trim();
+            const views = document.getElementById('videoViews').value.trim();
+            if (!title || !embed) { toast('Preencha título e ID do vídeo', 'error'); return; }
+            const body = { title, embed, views: views || '—' };
+            const apiName = 'videos';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Vídeo atualizado!' : 'Vídeo adicionado!', 'success');
+                closeModal('videoModal');
+                loadCollection('videos');
+                loadDashboard();
+            } catch {
+                toast('Erro ao guardar vídeo', 'error');
+            }
+        }
+
+        // ============================================================
+        // TIMELINE CRUD
+        // ============================================================
+        function openTimelineModal(item) {
+            document.getElementById('timelineModalTitle').textContent = item ? 'Editar Marco' : 'Novo Marco';
+            document.getElementById('tlEditId').value = item ? item.id : '';
+            document.getElementById('tlYear').value = item ? item.year : '';
+            document.getElementById('tlTitle').value = item ? item.title : '';
+            document.getElementById('tlDesc').value = item ? item.desc : '';
+            document.getElementById('tlLocation').value = item ? item.location : '';
+            openModal('timelineModal');
+        }
+
+        async function saveTimeline() {
+            const id = document.getElementById('tlEditId').value;
+            const year = document.getElementById('tlYear').value.trim();
+            const title = document.getElementById('tlTitle').value.trim();
+            const desc = document.getElementById('tlDesc').value.trim();
+            const location = document.getElementById('tlLocation').value.trim();
+            if (!year || !title) { toast('Preencha ano e título', 'error'); return; }
+            const body = { year, title, desc, location };
+            const apiName = 'timeline';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Marco atualizado!' : 'Marco adicionado!', 'success');
+                closeModal('timelineModal');
+                loadCollection('timeline');
+                loadDashboard();
+            } catch {
+                toast('Erro ao guardar marco', 'error');
+            }
+        }
+
+        // ============================================================
+        // STAT CRUD
+        // ============================================================
+        function openStatModal(item) {
+            document.getElementById('statModalTitle').textContent = item ? 'Editar Estatística' : 'Nova Estatística';
+            document.getElementById('statEditId').value = item ? item.id : '';
+            document.getElementById('statValue').value = item ? item.value : '';
+            document.getElementById('statLabel').value = item ? item.label : '';
+            document.getElementById('statSub').value = item ? item.sub : '';
+            openModal('statModal');
+        }
+
+        async function saveStat() {
+            const id = document.getElementById('statEditId').value;
+            const value = document.getElementById('statValue').value.trim();
+            const label = document.getElementById('statLabel').value.trim();
+            const sub = document.getElementById('statSub').value.trim();
+            if (!value || !label) { toast('Preencha valor e rótulo', 'error'); return; }
+            const body = { value, label, sub };
+            const apiName = 'stats';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Estatística atualizada!' : 'Estatística adicionada!', 'success');
+                closeModal('statModal');
+                loadCollection('stats');
+                loadDashboard();
+            } catch {
+                toast('Erro ao guardar estatística', 'error');
+            }
+        }
+
+        // ============================================================
+        // TÍTULO / CONQUISTA CRUD
+        // ============================================================
+        function openTitleModal(item) {
+            document.getElementById('titleModalTitle').textContent = item ? 'Editar Conquista' : 'Nova Conquista';
+            document.getElementById('titleEditId').value = item ? item.id : '';
+            document.getElementById('titleType').value = item ? item.type : 'gold';
+            document.getElementById('titleYear').value = item ? item.year : '';
+            document.getElementById('titleCompetition').value = item ? item.competition : '';
+            document.getElementById('titleResult').value = item ? item.result : '';
+            openModal('titleModal');
+        }
+
+        async function saveTitle() {
+            const id = document.getElementById('titleEditId').value;
+            const type = document.getElementById('titleType').value;
+            const year = document.getElementById('titleYear').value.trim();
+            const competition = document.getElementById('titleCompetition').value.trim();
+            const result = document.getElementById('titleResult').value.trim();
+            if (!year || !competition) { toast('Preencha ano e competição', 'error'); return; }
+            const body = { type, year, competition, result };
+            const apiName = 'titles';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Conquista atualizada!' : 'Conquista adicionada!', 'success');
+                closeModal('titleModal');
+                loadCollection('titles');
+                loadDashboard();
+            } catch {
+                toast('Erro ao guardar conquista', 'error');
+            }
+        }
+
+        // ============================================================
+        // PROJETO SOCIAL CRUD
+        // ============================================================
+        function openSocialProjectModal(item) {
+            document.getElementById('socialProjectModalTitle').textContent = item ? 'Editar Projeto Social' : 'Novo Projeto Social';
+            document.getElementById('spEditId').value = item ? item.id : '';
+            document.getElementById('spTitle').value = item ? item.title : '';
+            document.getElementById('spDesc').value = item ? item.desc : '';
+            document.getElementById('spImage').value = item ? item.image : '';
+            openModal('socialProjectModal');
+        }
+
+        async function saveSocialProject() {
+            const id = document.getElementById('spEditId').value;
+            const title = document.getElementById('spTitle').value.trim();
+            const desc = document.getElementById('spDesc').value.trim();
+            const fileInput = document.getElementById('spFileInput');
+            let image = document.getElementById('spImage').value.trim();
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    await saveSocialProjectData(id, title, desc, e.target.result);
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+
+            if (!title) { toast('Preencha o título do projeto', 'error'); return; }
+            await saveSocialProjectData(id, title, desc, image);
+        }
+
+        async function saveSocialProjectData(id, title, desc, image) {
+            const body = { title, desc, image };
+            const apiName = 'socialprojects';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Projeto social atualizado!' : 'Projeto social adicionado!', 'success');
+                closeModal('socialProjectModal');
+                loadCollection('socialprojects');
+                loadDashboard();
+                document.getElementById('spFileInput').value = '';
+            } catch {
+                toast('Erro ao guardar projeto social', 'error');
+            }
+        }
+
+        document.getElementById('spFileInput').addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('spImage').value = e.target.result;
+                    toast('Imagem carregada!', 'success');
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // ============================================================
+        // SPONSOR CRUD
+        // ============================================================
+        function openSponsorModal(item) {
+            document.getElementById('sponsorModalTitle').textContent = item ? 'Editar Patrocinador' : 'Novo Patrocinador';
+            document.getElementById('sponsorEditId').value = item ? item.id : '';
+            document.getElementById('sponsorName').value = item ? item.name : '';
+            document.getElementById('sponsorLogo').value = item ? item.logo : '';
+            openModal('sponsorModal');
+        }
+
+        async function saveSponsor() {
+            const id = document.getElementById('sponsorEditId').value;
+            const name = document.getElementById('sponsorName').value.trim();
+            const logo = document.getElementById('sponsorLogo').value.trim();
+            if (!name || !logo) { toast('Preencha nome e logo', 'error'); return; }
+            const body = { name, logo };
+            const apiName = 'sponsors';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Patrocinador atualizado!' : 'Patrocinador adicionado!', 'success');
+                closeModal('sponsorModal');
+                loadCollection('sponsors');
+                loadDashboard();
+            } catch {
+                toast('Erro ao guardar patrocinador', 'error');
+            }
+        }
+
+        // ============================================================
+        // NEWS CRUD
+        // ============================================================
+        function openNewsModal(item) {
+            document.getElementById('newsModalTitle').textContent = item ? 'Editar Notícia' : 'Nova Notícia';
+            document.getElementById('newsEditId').value = item ? item.id : '';
+            document.getElementById('newsSource').value = item ? item.source : '';
+            document.getElementById('newsDate').value = item ? item.date : '';
+            document.getElementById('newsHeadline').value = item ? item.headline : '';
+            openModal('newsModal');
+        }
+
+        async function saveNews() {
+            const id = document.getElementById('newsEditId').value;
+            const source = document.getElementById('newsSource').value.trim();
+            const date = document.getElementById('newsDate').value.trim();
+            const headline = document.getElementById('newsHeadline').value.trim();
+            if (!source || !headline) { toast('Preencha fonte e título', 'error'); return; }
+            const body = { source, date, headline };
+            const apiName = 'news';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Notícia atualizada!' : 'Notícia adicionada!', 'success');
+                closeModal('newsModal');
+                loadCollection('news');
+                loadDashboard();
+            } catch {
+                toast('Erro ao guardar notícia', 'error');
+            }
+        }
+
+        // ============================================================
+        // SOCIAL CRUD
+        // ============================================================
+        function openSocialModal(item) {
+            document.getElementById('socialModalTitle').textContent = item ? 'Editar Rede Social' : 'Nova Rede Social';
+            document.getElementById('socialEditId').value = item ? item.id : '';
+            document.getElementById('socialPlatform').value = item ? item.platform : 'Instagram';
+            document.getElementById('socialFollowers').value = item ? item.followers : '';
+            document.getElementById('socialHandle').value = item ? item.handle : '';
+            document.getElementById('socialUrl').value = item ? item.url : '';
+            openModal('socialModal');
+        }
+
+        async function saveSocial() {
+            const id = document.getElementById('socialEditId').value;
+            const platform = document.getElementById('socialPlatform').value;
+            const followers = document.getElementById('socialFollowers').value.trim();
+            const handle = document.getElementById('socialHandle').value.trim();
+            const url = document.getElementById('socialUrl').value.trim();
+            if (!followers) { toast('Preencha o número de seguidores', 'error'); return; }
+            const iconMap = { Instagram: 'instagram', YouTube: 'youtube', Facebook: 'facebook-f' };
+            const body = { platform, followers, handle, url, icon: iconMap[platform] || 'share-alt' };
+            const apiName = 'social';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Rede social atualizada!' : 'Rede social adicionada!', 'success');
+                closeModal('socialModal');
+                loadCollection('social');
+                loadDashboard();
+            } catch {
+                toast('Erro ao guardar rede social', 'error');
+            }
+        }
+
+        // ============================================================
+        // CALENDAR CRUD
+        // ============================================================
+        function openCalendarModal(item) {
+            document.getElementById('calendarModalTitle').textContent = item ? 'Editar Competição' : 'Nova Competição';
+            document.getElementById('calEditId').value = item ? item.id : '';
+            document.getElementById('calMonth').value = item ? item.month : 'Jan';
+            document.getElementById('calDay').value = item ? item.day : '';
+            document.getElementById('calTitle').value = item ? item.title : '';
+            document.getElementById('calLocation').value = item ? item.location : '';
+            document.getElementById('calStatus').value = item ? item.status : 'confirmed';
+            openModal('calendarModal');
+        }
+
+        async function saveCalendar() {
+            const id = document.getElementById('calEditId').value;
+            const month = document.getElementById('calMonth').value;
+            const day = document.getElementById('calDay').value.trim();
+            const title = document.getElementById('calTitle').value.trim();
+            const location = document.getElementById('calLocation').value.trim();
+            const status = document.getElementById('calStatus').value;
+            if (!day || !title) { toast('Preencha dia e título', 'error'); return; }
+            const body = { month, day: parseInt(day), title, location, status };
+            const apiName = 'calendar';
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/${apiName}/${id}` : '/api/' + apiName;
+                const r = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error();
+                toast(id ? 'Competição atualizada!' : 'Competição adicionada!', 'success');
+                closeModal('calendarModal');
+                loadCollection('calendar');
+                loadDashboard();
+            } catch {
+                toast('Erro ao guardar competição', 'error');
+            }
+        }
+
+        // ============================================================
+        // SETTINGS
+        // ============================================================
+        async function loadServerInfo() {
+            const el = document.getElementById('serverInfo');
+            try {
+                const r = await fetch('/api/health', { headers: { 'X-API-Key': API_KEY } });
+                if (!r.ok) throw new Error();
+                const d = await r.json();
+                el.innerHTML = `
+                            <div>🟢 <b>Status:</b> Online</div>
+                            <div>📦 <b>Versão:</b> ${d.version || '5.0'}</div>
+                            <div>⏱️ <b>Uptime:</b> ${d.uptime ? Math.floor(d.uptime/60) + ' min' : 'N/A'}</div>
+                            <div>🌍 <b>Ambiente:</b> ${d.vercel ? '🌐 Vercel' : '💻 Local'}</div>
+                        `;
+            } catch {
+                el.innerHTML = '<span style="color:#e74c3c;">❌ Servidor offline</span>';
+            }
+        }
+
+        // ============================================================
+        // BACKUP
+        // ============================================================
+        async function exportBackup() {
+            try {
+                const r = await fetch('/api/all', { headers: { 'X-API-Key': API_KEY } });
+                if (!r.ok) throw new Error();
+                const d = await r.json();
+                const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'elianabandeira-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                toast('Backup exportado!', 'success');
+            } catch {
+                toast('Erro ao exportar', 'error');
+            }
+        }
+
+        async function importBackup() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) { toast('Selecione um ficheiro JSON', 'error'); return; }
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!confirm('Isto vai substituir todos os dados atuais. Continuar?')) return;
+                    const collections = ['photos', 'videos', 'timeline', 'stats', 'titles', 'socialprojects', 'sponsors',
+                        'news', 'social', 'calendar', 'profile', 'colors'
+                    ];
+                    for (const col of collections) {
+                        if (data[col]) {
+                            const items = Array.isArray(data[col]) ? data[col] : [data[col]];
+                            for (const item of items) {
+                                const r = await fetch('/api/' + col, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                                    body: JSON.stringify(item)
+                                });
+                                if (!r.ok) console.warn('Erro ao importar', col, item.id);
+                            }
+                        }
+                    }
+                    toast('Backup importado com sucesso!', 'success');
+                    loadDashboard();
+                    loadCollection('fotos');
+                } catch (err) {
+                    toast('Erro ao importar: ' + err.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ============================================================
+        // CLEAR CACHE
+        // ============================================================
+        function clearCache() {
+            const result = document.getElementById('cacheResult');
+            try {
+                if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                        names.forEach(function(name) { caches.delete(name); });
+                    });
+                }
+                localStorage.clear();
+                sessionStorage.clear();
+                result.innerHTML = '<span style="color:#27ae60;">✅ Cache limpo! A página vai recarregar...</span>';
+                setTimeout(() => window.location.reload(true), 1200);
+                toast('Cache do site limpo!', 'success');
+            } catch (e) {
+                result.innerHTML = '<span style="color:#e74c3c;">❌ Erro: ' + e.message + '</span>';
+                toast('Erro ao limpar cache', 'error');
+            }
+        }
+
+        // ============================================================
+        // MODAL HELPERS
+        // ============================================================
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
+        });
+
+        // ============================================================
+        // TOAST
+        // ============================================================
+        function toast(msg, type = 'info') {
+            const icons = { success: 'check-circle', error: 'times-circle', info: 'info-circle' };
+            const el = document.createElement('div');
+            el.className = 'toast ' + type;
+            el.innerHTML = `<i class="fas fa-${icons[type] || 'info-circle'}"></i> ${msg}`;
+            document.getElementById('toastContainer').appendChild(el);
+            setTimeout(() => { el.classList.add('out');
+                setTimeout(() => el.remove(), 300); }, 3500);
+        }
+
+        // ============================================================
+        // UTILS
+        // ============================================================
+        function esc(s) {
+            if (!s) return '';
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ============================================================
+        // CONFIGURAR UPLOADS DO PERFIL
+        // ============================================================
+        function setupProfileUploads() {
+            setupProfileUpload('heroFileInput', 'profileHeroPreview', 'profileHeroImage');
+            setupProfileUpload('aboutFileInput', 'profileAboutPreview', 'profileAboutImage');
+            setupProfileUpload('waFileInput', 'profileWaPreview', 'profileWaImage');
+            setupProfileUpload('speakingFileInput', 'profileSpeakingPreview', 'profileSpeakingImage');
+        }
+
+        // ============================================================
+        // INICIALIZAR
+        // ============================================================
+        console.log('🏋️‍♀️ Eliana Bandeira — Painel Administrativo');
+        console.log('🔗 API: /api (caminho relativo)');
+        console.log('🔑 Senha: eliana');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupProfileUploads();
+        });
+
+        setTimeout(() => {
+            if (document.getElementById('adminApp').classList.contains('visible')) {
+                loadDashboard();
+            }
+        }, 500);
+    </script>
+
+</body>
+</html>
