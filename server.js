@@ -170,25 +170,36 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// ============================================================
+// ROTA /api/stats - AGORA SEMPRE DEVOLVE O ARRAY DE DADOS
+// (Para a aba de estatísticas do admin)
+// ============================================================
 app.get('/api/stats', (req, res) => {
-    const hasApiKey = verifyApiKey(req);
-    if (hasApiKey) {
-        const stats = {
-            photos: Array.isArray(db.photos) ? db.photos.length : 0,
-            videos: Array.isArray(db.videos) ? db.videos.length : 0,
-            timeline: Array.isArray(db.timeline) ? db.timeline.length : 0,
-            stats: Array.isArray(db.stats) ? db.stats.length : 0,
-            titles: Array.isArray(db.titles) ? db.titles.length : 0,
-            socialprojects: Array.isArray(db.socialprojects) ? db.socialprojects.length : 0,
-            sponsors: Array.isArray(db.sponsors) ? db.sponsors.length : 0,
-            news: Array.isArray(db.news) ? db.news.length : 0,
-            social: Array.isArray(db.social) ? db.social.length : 0,
-            calendar: Array.isArray(db.calendar) ? db.calendar.length : 0
-        };
-        return res.json(stats);
-    }
-    if (db.stats) return res.json(db.stats);
-    res.status(404).json({ error: 'Estatísticas não encontradas' });
+    // SEMPRE devolve o array de dados, NUNCA os contadores
+    return res.json(db.stats || []);
+});
+
+// ============================================================
+// NOVA ROTA EXCLUSIVA PARA OS CONTADORES DO DASHBOARD
+// (O admin.html continua a chamar /api/stats, mas o dashboard 
+//  precisa ser atualizado para usar esta nova rota)
+// ============================================================
+app.get('/api/dashboard-counters', (req, res) => {
+    if (!verifyApiKey(req)) return res.status(401).json({ error: 'Chave API inválida' });
+    
+    const counters = {
+        photos: Array.isArray(db.photos) ? db.photos.length : 0,
+        videos: Array.isArray(db.videos) ? db.videos.length : 0,
+        timeline: Array.isArray(db.timeline) ? db.timeline.length : 0,
+        stats: Array.isArray(db.stats) ? db.stats.length : 0,
+        titles: Array.isArray(db.titles) ? db.titles.length : 0,
+        socialprojects: Array.isArray(db.socialprojects) ? db.socialprojects.length : 0,
+        sponsors: Array.isArray(db.sponsors) ? db.sponsors.length : 0,
+        news: Array.isArray(db.news) ? db.news.length : 0,
+        social: Array.isArray(db.social) ? db.social.length : 0,
+        calendar: Array.isArray(db.calendar) ? db.calendar.length : 0
+    };
+    return res.json(counters);
 });
 
 app.get('/api/export', (req, res) => {

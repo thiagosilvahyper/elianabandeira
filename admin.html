@@ -2059,7 +2059,7 @@
             fotos: 'photos',
             videos: 'videos',
             timeline: 'timeline',
-            stats: 'stats',
+            stats: 'stats',        // <-- Esta linha DEVE existir!
             titles: 'titles',
             socialprojects: 'socialprojects',
             sponsors: 'sponsors',
@@ -2122,8 +2122,8 @@
         // ============================================================
         async function loadDashboard() {
             try {
-                const r = await fetch('/api/stats', { headers: { 'X-API-Key': API_KEY } });
-                if (!r.ok) throw new Error();
+                const r = await fetch('/api/dashboard-counters', { headers: { 'X-API-Key': API_KEY } });
+                if (!r.ok) throw new Error('Falha ao obter contadores do servidor');
                 const d = await r.json();
                 document.getElementById('kpi-photos').textContent = d.photos || 0;
                 document.getElementById('kpi-videos').textContent = d.videos || 0;
