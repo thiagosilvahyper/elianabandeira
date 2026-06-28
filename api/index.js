@@ -4,9 +4,9 @@
 
 const path = require('path');
 
-// process.cwd() garante que o Node busque a partir da raiz do projeto,
-// evitando o erro de módulo não encontrado (MODULE_NOT_FOUND) no Vercel.
+// process.cwd() força o Node a buscar o server.js a partir da raiz real do projeto,
+// impedindo o erro MODULE_NOT_FOUND dentro do ambiente da Vercel.
 const server = require(path.join(process.cwd(), 'server.js'));
 
-// Exporta o servidor para o ambiente Serverless do Vercel
+// Exportar para o Vercel
 module.exports = server;
