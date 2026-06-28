@@ -1,7 +1,5 @@
 // ============================================================
 // SERVER.JS — VERSÃO COMPLETA E CORRIGIDA PARA VERCEL
-// CORREÇÕES EXTRAS: 
-// - Proteção absoluta contra falhas de escrita/leitura de arquivos no Vercel.
 // ============================================================
 
 const express = require('express');
@@ -12,9 +10,6 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Verificar se está em ambiente Vercel (read-only filesystem)
-const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV !== undefined;
-
 // ============================================================
 // MIDDLEWARE
 // ============================================================
@@ -22,7 +17,7 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Servir ficheiros estáticos usando process.cwd() (raiz do projeto)
+// CORREÇÃO VERCEL: Servir ficheiros estáticos usando process.cwd() (raiz do projeto)
 app.use(express.static(process.cwd()));
 
 // ============================================================
@@ -31,7 +26,7 @@ app.use(express.static(process.cwd()));
 const DATA_FILE = path.join(process.cwd(), 'data.json');
 const API_KEY = process.env.API_KEY || 'imperare2024';
 
-// Dados iniciais COMPLETOS com todas as coleções
+// Dados iniciais COMPLETOS
 const defaultData = {
     photos: [
         { id: 1, title: 'Treino explosivo', category: 'treinos', url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=500&fit=crop' },
@@ -115,12 +110,9 @@ const defaultData = {
 };
 
 // ============================================================
-// FUNÇÕES DE PERSISTÊNCIA (BLINDADAS PARA VERCEL)
+// FUNÇÕES DE PERSISTÊNCIA
 // ============================================================
 function loadData() {
-    if (isVercel) {
-        return JSON.parse(JSON.stringify(defaultData));
-    }
     try {
         if (fs.existsSync(DATA_FILE)) {
             const raw = fs.readFileSync(DATA_FILE, 'utf8');
@@ -137,10 +129,6 @@ function loadData() {
 }
 
 function saveData(data) {
-    if (isVercel) {
-        // No Vercel não grava no disco para evitar Erro 500
-        return true; 
-    }
     try {
         fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
         return true;
@@ -150,8 +138,8 @@ function saveData(data) {
     }
 }
 
-// Inicializar banco de dados em memória ou arquivo
 let db = loadData();
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV !== undefined;
 
 const validCollections = [
     'photos', 'videos', 'timeline', 'stats', 'titles', 
@@ -175,7 +163,7 @@ function verifyApiKey(req) {
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'online', 
-        version: '5.3-vercel', 
+        version: '5.2-vercel', 
         uptime: Math.floor(process.uptime()),
         vercel: isVercel,
         timestamp: new Date().toISOString() 
@@ -186,16 +174,16 @@ app.get('/api/stats', (req, res) => {
     const hasApiKey = verifyApiKey(req);
     if (hasApiKey) {
         const stats = {
-            photos: db.photos?.length || 0,
-            videos: db.videos?.length || 0,
-            timeline: db.timeline?.length || 0,
-            stats: db.stats?.length || 0,
-            titles: db.titles?.length || 0,
-            socialprojects: db.socialprojects?.length || 0,
-            sponsors: db.sponsors?.length || 0,
-            news: db.news?.length || 0,
-            social: db.social?.length || 0,
-            calendar: db.calendar?.length || 0
+            photos: Array.isArray(db.photos) ? db.photos.length : 0,
+            videos: Array.isArray(db.videos) ? db.videos.length : 0,
+            timeline: Array.isArray(db.timeline) ? db.timeline.length : 0,
+            stats: Array.isArray(db.stats) ? db.stats.length : 0,
+            titles: Array.isArray(db.titles) ? db.titles.length : 0,
+            socialprojects: Array.isArray(db.socialprojects) ? db.socialprojects.length : 0,
+            sponsors: Array.isArray(db.sponsors) ? db.sponsors.length : 0,
+            news: Array.isArray(db.news) ? db.news.length : 0,
+            social: Array.isArray(db.social) ? db.social.length : 0,
+            calendar: Array.isArray(db.calendar) ? db.calendar.length : 0
         };
         return res.json(stats);
     }
@@ -220,8 +208,8 @@ app.post('/api/import', (req, res) => {
                 else if (typeof data[col] === 'object') db[col] = { ...db[col], ...data[col] };
             }
         }
-        saveData(db);
-        res.json({ success: true, message: 'Dados importados com sucesso' });
+        if (saveData(db)) res.json({ success: true, message: 'Dados importados com sucesso' });
+        else res.status(500).json({ error: 'Erro ao guardar dados' });
     } catch (err) {
         res.status(500).json({ error: 'Erro ao importar dados: ' + err.message });
     }
@@ -316,38 +304,41 @@ app.delete('/api/:collection/:id', (req, res) => {
 });
 
 // ============================================================
-// ROTAS PARA O FRONTEND (Usa process.cwd() estável)
+// ROTAS PARA O FRONTEND (CORRIGIDAS COM process.cwd())
 // ============================================================
+
 app.get('/', (req, res) => {
     const filePath = path.join(process.cwd(), 'index.html');
-    res.sendFile(filePath);
+    if (fs.existsSync(filePath)) res.sendFile(filePath);
+    else res.status(404).send('index.html não encontrado');
 });
 
 app.get('/admin', (req, res) => {
     const filePath = path.join(process.cwd(), 'admin.html');
-    res.sendFile(filePath);
+    if (fs.existsSync(filePath)) res.sendFile(filePath);
+    else res.status(404).send('admin.html não encontrado');
 });
 
 app.get('/admin.html', (req, res) => {
     const filePath = path.join(process.cwd(), 'admin.html');
-    res.sendFile(filePath);
+    if (fs.existsSync(filePath)) res.sendFile(filePath);
+    else res.status(404).send('admin.html não encontrado');
 });
 
 app.get('/index.html', (req, res) => {
     const filePath = path.join(process.cwd(), 'index.html');
-    res.sendFile(filePath);
+    if (fs.existsSync(filePath)) res.sendFile(filePath);
+    else res.status(404).send('index.html não encontrado');
 });
 
 app.use((req, res) => {
     res.status(404).json({ error: 'Rota não encontrada' });
 });
 
-// EXPORTAR PARA O VERCEL
 module.exports = app;
 
-// INICIAR SERVIDOR LOCAL
 if (require.main === module) {
     app.listen(PORT, () => {
-        console.log(`Servidor rodando localmente na porta ${PORT}`);
+        console.log(`✅ Servidor rodando localmente na porta ${PORT}`);
     });
 }
