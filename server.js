@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// CORREÇÃO VERCEL: Servir ficheiros estáticos usando process.cwd() (raiz do projeto)
+// ⚠️ IMPORTANTE: Servir ficheiros estáticos da raiz (DEVE SER A PRIMEIRA COISA)
 app.use(express.static(process.cwd()));
 
 // ============================================================
@@ -26,7 +26,7 @@ app.use(express.static(process.cwd()));
 const DATA_FILE = path.join(process.cwd(), 'data.json');
 const API_KEY = process.env.API_KEY || 'imperare2024';
 
-// Dados iniciais COMPLETOS
+// Dados iniciais COMPLETOS com todas as coleções
 const defaultData = {
     photos: [
         { id: 1, title: 'Treino explosivo', category: 'treinos', url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=500&fit=crop' },
@@ -304,7 +304,7 @@ app.delete('/api/:collection/:id', (req, res) => {
 });
 
 // ============================================================
-// ROTAS PARA O FRONTEND (CORRIGIDAS COM process.cwd())
+// ROTAS PARA O FRONTEND
 // ============================================================
 
 app.get('/', (req, res) => {
