@@ -181,8 +181,6 @@ app.get('/api/stats', (req, res) => {
 
 // ============================================================
 // NOVA ROTA EXCLUSIVA PARA OS CONTADORES DO DASHBOARD
-// (O admin.html continua a chamar /api/stats, mas o dashboard 
-//  precisa ser atualizado para usar esta nova rota)
 // ============================================================
 app.get('/api/dashboard-counters', (req, res) => {
     if (!verifyApiKey(req)) return res.status(401).json({ error: 'Chave API inválida' });
@@ -200,6 +198,66 @@ app.get('/api/dashboard-counters', (req, res) => {
         calendar: Array.isArray(db.calendar) ? db.calendar.length : 0
     };
     return res.json(counters);
+});
+
+// ============================================================
+// ROTAS PARA OS FICHEIROS DE TRADUÇÃO
+// ============================================================
+const localesDir = path.join(process.cwd(), 'locales');
+
+// Tenta servir da pasta locales, depois da raiz
+function serveTranslation(lang, res) {
+    // Caminhos possíveis
+    const possiblePaths = [
+        path.join(process.cwd(), 'locales', lang + '.json'),
+        path.join(process.cwd(), lang + '.json'),
+        path.join(process.cwd(), 'public', 'locales', lang + '.json'),
+        path.join(process.cwd(), 'public', lang + '.json')
+    ];
+
+    for (const filePath of possiblePaths) {
+        if (fs.existsSync(filePath)) {
+            try {
+                const content = fs.readFileSync(filePath, 'utf8');
+                res.setHeader('Content-Type', 'application/json');
+                res.setHeader('Cache-Control', 'public, max-age=3600');
+                return res.send(content);
+            } catch (err) {
+                console.error('❌ Erro ao ler tradução:', err);
+            }
+        }
+    }
+
+    // Fallback: tentar servir da memória (se os dados estiverem disponíveis)
+    const translations = {
+        pt: require('./pt.json'),
+        es: require('./es.json'),
+        en: require('./en.json'),
+        fr: require('./fr.json')
+    };
+
+    if (translations[lang]) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.json(translations[lang]);
+    }
+
+    res.status(404).json({ error: 'Traduções não encontradas' });
+}
+
+// Rotas para cada idioma
+app.get('/pt.json', (req, res) => serveTranslation('pt', res));
+app.get('/es.json', (req, res) => serveTranslation('es', res));
+app.get('/en.json', (req, res) => serveTranslation('en', res));
+app.get('/fr.json', (req, res) => serveTranslation('fr', res));
+
+// Rota genérica para qualquer idioma (fallback)
+app.get('/:lang.json', (req, res) => {
+    const lang = req.params.lang;
+    if (['pt', 'es', 'en', 'fr'].includes(lang)) {
+        serveTranslation(lang, res);
+    } else {
+        res.status(404).json({ error: 'Idioma não suportado' });
+    }
 });
 
 app.get('/api/export', (req, res) => {
