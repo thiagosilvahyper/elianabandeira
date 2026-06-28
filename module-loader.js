@@ -338,7 +338,7 @@
         // Inicia o carregamento
         translationPromises[lang] = (async function() {
             try {
-                const response = await fetch(`/data/translations/${lang}.json`);
+                const response = await fetch(`/${lang}.json`);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
                 translations[lang] = data;
